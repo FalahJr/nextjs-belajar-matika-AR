@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { AR_CARDS } from '../../data/arCards'
+import { AR_CARDS } from '../../config/arTargets'
 import { useAREngine } from '../../hooks/useAREngine'
 import { useCardSessions } from '../../hooks/useCardSessions'
 import { getCardById } from '../../utils/cards'
@@ -42,6 +42,7 @@ export function ARSession({ onExit, onDemo }: Props) {
         status={ar.status}
         message={ar.message}
         activeModelState={card ? ar.modelStates[card.cardId] : undefined}
+        unmappedTarget={ar.unmappedTarget}
         canSwitchCamera={ar.canSwitchCamera}
         onStart={() => void ar.start()}
         onStop={ar.stop}

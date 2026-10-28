@@ -11,6 +11,8 @@ type Props = {
   message: string | undefined
   /** Status model 3D kartu yang sedang aktif (untuk banner fallback). */
   activeModelState: ModelState | undefined
+  /** Indeks target terakhir yang terdeteksi tetapi belum dipetakan ke materi (null bila tidak ada). */
+  unmappedTarget: number | null
   canSwitchCamera: boolean
   onStart: () => void
   onStop: () => void
@@ -32,6 +34,7 @@ export function ARCamera({
   status,
   message,
   activeModelState,
+  unmappedTarget,
   canSwitchCamera,
   onStart,
   onStop,
@@ -44,7 +47,9 @@ export function ARCamera({
 
   return (
     <div className="relative isolate h-[52dvh] min-h-72 overflow-hidden rounded-3xl bg-indigo-950 shadow-soft lg:h-[calc(100dvh-9rem)] lg:min-h-[28rem]">
-      <div ref={containerRef} className="absolute inset-0" />
+      {/* MindAR memberi <video> lebar inline (mode "cover"); `max-width: 100%` dari preflight Tailwind
+          memotongnya sehingga video tampil letterbox dan model 3D bergeser dari kartu. */}
+      <div ref={containerRef} className="absolute inset-0 [&_video]:max-w-none" />
 
       {live && (
         <>
@@ -77,7 +82,13 @@ export function ARCamera({
                 : 'Kartu hilang sementara. Arahkan lagi ke kartu — progres kuis tetap aman.'}
             </p>
           )}
-          {(activeModelState === 'missing' || activeModelState === 'error') && status === 'target-found' && (
+          {unmappedTarget !== null && status === 'target-found' && (
+            <p className="absolute inset-x-3 bottom-3 z-10 flex items-center gap-2 rounded-2xl bg-amber-100 px-4 py-2.5 text-sm font-bold text-amber-950">
+              <TriangleAlert className="size-5 shrink-0" aria-hidden="true" />
+              Target #{unmappedTarget} terdeteksi, tetapi belum dipetakan ke materi mana pun (lihat src/config/targets).
+            </p>
+          )}
+          {unmappedTarget === null && (activeModelState === 'missing' || activeModelState === 'error') && status === 'target-found' && (
             <p className="absolute inset-x-3 bottom-3 z-10 flex items-center gap-2 rounded-2xl bg-amber-100 px-4 py-2.5 text-sm font-bold text-amber-950">
               <TriangleAlert className="size-5 shrink-0" aria-hidden="true" />
               {activeModelState === 'missing'

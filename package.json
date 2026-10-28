@@ -9,6 +9,9 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "vitest run",
+    "targets:generate": "node scripts/targets/generate-temporary-targets.mjs",
+    "compile:targets": "node scripts/targets/compile-targets.mjs",
+    "verify:targets": "node scripts/targets/verify-targets.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -27,6 +30,7 @@
     "@types/react-dom": "^19.3.0",
     "@types/three": "0.160.0",
     "@vitejs/plugin-react": "^4.7.0",
+    "canvas": "^3.2.3",
     "eslint": "^9.39.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.5.7",

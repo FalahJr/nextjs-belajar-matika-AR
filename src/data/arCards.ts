@@ -1,25 +1,21 @@
-import type { ARCardConfig } from "../types/ar";
+import type { ARCardContent } from "../types/ar";
 
 /**
- * Konfigurasi enam kartu AR.
+ * MATERI & SOAL enam kartu AR (urutan tampilan di landing page dan Mode Demo).
  *
- * PENTING — `targetIndex`:
- * Nilai di bawah ini adalah urutan YANG DIRENCANAKAN (0–5). MindAR memberi indeks berdasarkan
- * urutan gambar saat dikompilasi menjadi `cards.mind`, BUKAN berdasarkan nama file atau `cardId`.
- * Setelah file .mind dibuat, uji tiap kartu fisik lalu sesuaikan `targetIndex` di sini bila perlu.
+ * File ini sengaja TIDAK berisi `targetIndex` atau path model. Pemetaan target (.mind) dan
+ * ketersediaan model GLB dikelola di `src/config/arTargets.ts` + `src/config/targets/*.json`.
  *
  * PENTING — soal:
  * Seluruh soal di bawah adalah KONTEN AWAL (placeholder untuk pengembangan), bukan soal final.
  * Ganti sesuai materi final; struktur (3 soal, opsi A–D, kunci) divalidasi oleh unit test.
  */
-export const AR_CARDS: ARCardConfig[] = [
+export const AR_CARD_CONTENT: ARCardContent[] = [
   {
     cardId: "pizza-pecahan-biasa",
-    targetIndex: 0,
     title: "Pecahan Biasa",
     type: "PIZZA",
     topic: "Mengenal pembilang, penyebut, dan konsep dasar pecahan.",
-    modelUrl: "/assets/models/pizza-pecahan-biasa.glb",
     questions: [
       {
         id: "pizza-pecahan-biasa-1",
@@ -56,12 +52,9 @@ export const AR_CARDS: ARCardConfig[] = [
   },
   {
     cardId: "susu-pecahan-campuran",
-    targetIndex: 1,
     title: "Pecahan Campuran",
     type: "SUSU",
-
     topic: "Mengubah pecahan biasa menjadi pecahan campuran dan sebaliknya.",
-    modelUrl: "/assets/models/susu-pecahan-campuran.glb",
     questions: [
       {
         id: "susu-pecahan-campuran-1",
@@ -90,11 +83,9 @@ export const AR_CARDS: ARCardConfig[] = [
   },
   {
     cardId: "piring-buah-desimal",
-    targetIndex: 2,
     title: "Pecahan Menjadi Desimal",
     type: "BUAH SAYUR",
     topic: "Mengubah pecahan menjadi bentuk desimal.",
-    modelUrl: "/assets/models/piring-buah-desimal.glb",
     questions: [
       {
         id: "piring-buah-desimal-1",
@@ -124,11 +115,9 @@ export const AR_CARDS: ARCardConfig[] = [
   },
   {
     cardId: "jajanan-ubah-persen",
-    targetIndex: 3,
     title: "Pecahan Menjadi Persen",
     type: "JAJANAN PASAR",
     topic: "Mengubah pecahan menjadi bentuk persen.",
-    modelUrl: "/assets/models/jajanan-ubah-persen.glb",
     questions: [
       {
         id: "jajanan-ubah-persen-1",
@@ -157,11 +146,9 @@ export const AR_CARDS: ARCardConfig[] = [
   },
   {
     cardId: "pizza-urut-campuran",
-    targetIndex: 4,
     title: "Mengurutkan Pecahan",
     type: "KUE",
     topic: "Memahami dan mengurutkan nilai pecahan.",
-    modelUrl: "/assets/models/pizza-urut-campuran.glb",
     questions: [
       {
         id: "pizza-urut-campuran-1",
@@ -201,12 +188,10 @@ export const AR_CARDS: ARCardConfig[] = [
   },
   {
     cardId: "kue-operasi-hitung",
-    targetIndex: 5,
     title: "Operasi Hitung Pecahan",
     type: "MOCHI",
     topic:
       "Melakukan operasi hitung pecahan penjumlahan, pengurangan, perkalian, dan pembagian.",
-    modelUrl: "/assets/models/kue-operasi-hitung.glb",
     questions: [
       {
         id: "kue-operasi-hitung-1",

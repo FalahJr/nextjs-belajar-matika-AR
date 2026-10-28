@@ -1,4 +1,4 @@
-import { AR_CARDS } from "../../data/arCards";
+import { AR_CARDS } from "../../config/arTargets";
 
 const LOOK: Record<string, { emoji: string; bg: string }> = {
   "pizza-pecahan-biasa": { emoji: "🍕", bg: "bg-rose-100" },

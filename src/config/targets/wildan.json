@@ -1,0 +1,7 @@
+{
+  "id": "wildan",
+  "label": "Target final dari Wildan",
+  "description": "Isi `targets` HANYA setelah urutan target dikonfirmasi (dokumentasi dari Wildan atau uji scan). Lihat docs/ASET.md bagian Mode B.",
+  "mindUrl": "/assets/targets/wildan/targets.mind",
+  "targets": []
+}

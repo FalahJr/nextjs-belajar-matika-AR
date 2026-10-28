@@ -1,0 +1,35 @@
+{
+  "note": "Dibuat otomatis oleh `npm run compile:targets`. Jangan diedit manual.",
+  "set": "temporary",
+  "mindUrl": "/assets/targets/temporary-targets.mind",
+  "mindArVersion": "1.2.5",
+  "compiledAt": "2026-10-28T20:12:26.799Z",
+  "mindBytes": 2341853,
+  "mindSha256": "f426fb2154f1322f3b70ee97c8497f17934cbafe1f3770727ea210d3a5895b03",
+  "targets": [
+    {
+      "targetIndex": 0,
+      "cardId": "pizza-pecahan-biasa",
+      "image": "/assets/targets/temporary/01-pizza-pecahan-biasa.png",
+      "width": 1000,
+      "height": 1400,
+      "sha256": "fd75262ad85f7adfde8934b2373e476887bc1c1bce1a29d5805d85f53a49d566"
+    },
+    {
+      "targetIndex": 1,
+      "cardId": "susu-pecahan-campuran",
+      "image": "/assets/targets/temporary/02-susu-pecahan-campuran.png",
+      "width": 1000,
+      "height": 1400,
+      "sha256": "3cc5e5a3639a5253a177b70466d89043c8a7261b0512898d437e59e8185fd104"
+    },
+    {
+      "targetIndex": 2,
+      "cardId": "piring-buah-desimal",
+      "image": "/assets/targets/temporary/03-piring-buah-desimal.png",
+      "width": 1000,
+      "height": 1400,
+      "sha256": "1e9bc9fd870f7307742292a029e03ba00c816cac9f0e46784b8671753c8f1242"
+    }
+  ]
+}

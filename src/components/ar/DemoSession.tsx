@@ -1,5 +1,5 @@
 import { FlaskConical } from 'lucide-react'
-import { AR_CARDS } from '../../data/arCards'
+import { AR_CARDS } from '../../config/arTargets'
 import { useCardSessions } from '../../hooks/useCardSessions'
 import { summarizeAnswers } from '../../utils/scoring'
 import { useEffect, useState } from 'react'
@@ -28,7 +28,8 @@ export function DemoSession({ onExit }: Props) {
         <div>
           <p className="font-black text-amber-950">Mode Demo — Tanpa Kamera</p>
           <p className="text-sm font-medium text-amber-950">
-            Ini hanya untuk mencoba soal. Tidak ada pelacakan kartu atau objek 3D di mode ini.
+            Ini hanya untuk mencoba soal. Tidak ada pelacakan kartu atau objek 3D di mode ini. Semua materi bisa
+            dicoba, termasuk yang kartu atau model 3D-nya belum siap untuk AR.
           </p>
         </div>
       </div>
@@ -54,6 +55,11 @@ export function DemoSession({ onExit }: Props) {
                   <span className="text-xs font-bold text-slate-600">
                     {done ? `Selesai · nilai ${result.score}` : answered > 0 ? `${answered} dari ${c.questions.length} dijawab` : 'Belum dikerjakan'}
                   </span>
+                  {(c.modelPath === null || c.targetIndex === null) && (
+                    <span className="text-xs font-semibold text-amber-700">
+                      {c.modelPath === null ? 'Model 3D belum tersedia' : 'Kartu AR belum tersedia'}
+                    </span>
+                  )}
                 </button>
               </li>
             )

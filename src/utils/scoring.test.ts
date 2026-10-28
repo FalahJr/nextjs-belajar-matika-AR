@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { AR_CARDS } from '../data/arCards'
+import { AR_CARDS } from '../config/arTargets'
 import { PRACTICE_QUESTIONS } from '../data/practiceQuestions'
 import { calculateScore, summarizeAnswers } from './scoring'
-import { getCardById, getCardByTargetIndex, validateCards, validateQuestions } from './cards'
+import { validateCards, validateQuestions } from './cards'
 import type { AnswerKey } from '../types/quiz'
 
 describe('calculateScore', () => {
@@ -39,20 +39,6 @@ describe('data soal', () => {
   it('enam kartu AR valid: 3 soal A–D per kartu (total 18)', () => {
     expect(validateCards(AR_CARDS)).toEqual([])
     expect(AR_CARDS.flatMap((c) => c.questions)).toHaveLength(18)
-  })
-
-  it('targetIndex awal sesuai rencana 0–5', () => {
-    const expected = [
-      'pizza-pecahan-biasa',
-      'susu-pecahan-campuran',
-      'piring-buah-desimal',
-      'jajanan-ubah-persen',
-      'pizza-urut-campuran',
-      'kue-operasi-hitung',
-    ]
-    expected.forEach((cardId, i) => expect(getCardByTargetIndex(i)?.cardId).toBe(cardId))
-    expect(getCardByTargetIndex(6)).toBeUndefined()
-    expect(getCardById('kue-operasi-hitung')?.targetIndex).toBe(5)
   })
 
   it('validator mendeteksi data rusak', () => {

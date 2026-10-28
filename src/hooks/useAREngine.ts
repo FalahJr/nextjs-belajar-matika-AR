@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { AREngine, ModelState } from '../ar/arEngine'
-import { AR_CARDS } from '../data/arCards'
+import { AR_CARDS } from '../config/arTargets'
 import type { ARStatus } from '../types/ar'
 
 /**
@@ -18,6 +18,8 @@ export function useAREngine() {
   const [status, setStatus] = useState<ARStatus>('idle')
   const [message, setMessage] = useState<string | undefined>()
   const [activeCardId, setActiveCardId] = useState<string | null>(null)
+  /** Target terakhir yang terdeteksi tetapi belum dipetakan ke materi (null bila yang terakhir adalah kartu). */
+  const [unmappedTarget, setUnmappedTarget] = useState<number | null>(null)
   const [modelStates, setModelStates] = useState<Record<string, ModelState>>({})
   const [canSwitchCamera, setCanSwitchCamera] = useState(false)
 
@@ -37,6 +39,7 @@ export function useAREngine() {
     setStatus('loading')
     setMessage('Menyiapkan AR…')
     setCanSwitchCamera(false)
+    setUnmappedTarget(null)
 
     try {
       // Engine (Three.js + GLTFLoader) dimuat malas agar landing & latihan tetap ringan.
@@ -59,7 +62,12 @@ export function useAREngine() {
           }
         },
         onCardFound: (cardId) => {
-          if (mountedRef.current) setActiveCardId(cardId)
+          if (!mountedRef.current) return
+          setActiveCardId(cardId)
+          setUnmappedTarget(null)
+        },
+        onUnmappedTarget: (index) => {
+          if (mountedRef.current) setUnmappedTarget(index)
         },
         onModelState: (cardId, state) => {
           if (mountedRef.current) setModelStates((m) => ({ ...m, [cardId]: state }))
@@ -94,6 +102,7 @@ export function useAREngine() {
     status,
     message,
     activeCardId,
+    unmappedTarget,
     modelStates,
     canSwitchCamera,
     start,

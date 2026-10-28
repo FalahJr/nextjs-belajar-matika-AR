@@ -17,7 +17,8 @@ import {
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type { MindARAnchor, MindARThree } from 'mind-ar/dist/mindar-image-three.prod.js'
-import { AR_START_TIMEOUT_MS, MIND_TARGET_URL, MINDAR_TUNING, TARGET_LOST_GRACE_MS } from '../data/arConfig'
+import { ACTIVE_TARGET_SET } from '../config/arTargets'
+import { AR_START_TIMEOUT_MS, MINDAR_TUNING, TARGET_LOST_GRACE_MS } from '../data/arConfig'
 import type { ARCardConfig, ARStatus } from '../types/ar'
 import { assetExists } from './assets'
 
@@ -28,7 +29,15 @@ export type AREngineCallbacks = {
   /** Kartu yang sedang/terakhir terdeteksi. Dipanggil setiap kali sebuah target ditemukan. */
   onCardFound: (cardId: string) => void
   onModelState: (cardId: string, state: ModelState) => void
+  /**
+   * Target di file .mind yang belum dipetakan ke materi mana pun terdeteksi.
+   * Dipakai untuk mengonfirmasi urutan target pada file .mind dari luar (mis. dari Wildan).
+   */
+  onUnmappedTarget: (targetIndex: number) => void
 }
+
+/** Kunci `visible` untuk target tanpa kartu: `#<targetIndex>`; kartu memakai `cardId`. */
+const unmappedKey = (index: number) => `#${index}`
 
 class AREngineError extends Error {}
 
@@ -45,6 +54,7 @@ class AREngineError extends Error {}
 export class AREngine {
   private readonly container: HTMLElement
   private readonly cards: readonly ARCardConfig[]
+  private readonly mindUrl = ACTIVE_TARGET_SET.mindUrl
   private readonly cb: AREngineCallbacks
 
   private mindar: MindARThree | null = null
@@ -63,7 +73,8 @@ export class AREngine {
 
   constructor(container: HTMLElement, cards: readonly ARCardConfig[], callbacks: AREngineCallbacks) {
     this.container = container
-    this.cards = cards
+    // Hanya kartu yang punya target di file .mind aktif yang diberi anchor.
+    this.cards = cards.filter((c) => c.targetIndex !== null)
     this.cb = callbacks
   }
 
@@ -75,8 +86,8 @@ export class AREngine {
 
     try {
       this.emit('loading', 'Memeriksa file target kartu…')
-      if (!(await assetExists(MIND_TARGET_URL, signal))) {
-        this.finish('assets-missing', `File target ${MIND_TARGET_URL} belum tersedia.`)
+      if (!(await assetExists(this.mindUrl, signal))) {
+        this.finish('assets-missing', `File target ${this.mindUrl} belum tersedia.`)
         return
       }
 
@@ -90,7 +101,7 @@ export class AREngine {
 
       const mindar = new MindARThree({
         container: this.container,
-        imageTargetSrc: MIND_TARGET_URL,
+        imageTargetSrc: this.mindUrl,
         // UI bawaan MindAR dimatikan; status ditampilkan oleh komponen React.
         uiLoading: 'no',
         uiScanning: 'no',
@@ -105,9 +116,10 @@ export class AREngine {
       mindar.scene.add(sun)
 
       for (const card of this.cards) {
+        if (card.targetIndex === null) continue
         const anchor = mindar.addAnchor(card.targetIndex)
         anchor.onTargetFound = () => this.handleFound(card, anchor)
-        anchor.onTargetLost = () => this.handleLost(card)
+        anchor.onTargetLost = () => this.handleLost(card.cardId)
       }
 
       mindar.renderer.setAnimationLoop(() => {
@@ -118,6 +130,7 @@ export class AREngine {
 
       await this.startMindAR(mindar)
       if (this.disposed) return
+      this.checkTargetCount(mindar)
 
       this.ready = true
       this.resizeObserver = new ResizeObserver(() => {
@@ -246,22 +259,63 @@ export class AREngine {
     })
   }
 
+  /**
+   * Mencocokkan jumlah target di file .mind dengan konfigurasi:
+   * - targetIndex di konfigurasi melebihi isi file → konfigurasi salah, sesi dihentikan dengan pesan jelas;
+   * - indeks di file yang belum dipetakan → diberi anchor penanda agar bisa diidentifikasi saat scan.
+   */
+  private checkTargetCount(mindar: MindARThree) {
+    const count = mindar.controller?.markerDimensions?.length ?? 0
+    const outOfRange = this.cards.filter((c) => c.targetIndex !== null && c.targetIndex >= count)
+    if (outOfRange.length > 0) {
+      throw new AREngineError(
+        `File ${this.mindUrl} hanya berisi ${count} target, tetapi konfigurasi memetakan ` +
+          outOfRange.map((c) => `${c.title} ke target #${c.targetIndex}`).join(', ') +
+          '. Perbaiki src/config/targets atau kompilasi ulang file .mind.',
+      )
+    }
+    const mapped = new Set(this.cards.map((c) => c.targetIndex))
+    for (let index = 0; index < count; index++) {
+      if (mapped.has(index)) continue
+      const anchor = mindar.addAnchor(index)
+      anchor.group.add(createPlaceholder())
+      anchor.onTargetFound = () => this.handleUnmappedFound(index)
+      anchor.onTargetLost = () => this.handleLost(unmappedKey(index))
+    }
+  }
+
+  private markVisible(key: string) {
+    clearTimeout(this.lostTimer)
+    this.visible.delete(key)
+    this.visible.add(key)
+    this.emit('target-found')
+  }
+
+  /** Melaporkan target yang terlihat (kartu → onCardFound, target tanpa kartu → onUnmappedTarget). */
+  private announce(key: string) {
+    if (key.startsWith('#')) this.cb.onUnmappedTarget(Number(key.slice(1)))
+    else this.cb.onCardFound(key)
+  }
+
   private handleFound(card: ARCardConfig, anchor: MindARAnchor) {
     if (this.disposed) return
-    clearTimeout(this.lostTimer)
-    this.visible.delete(card.cardId)
-    this.visible.add(card.cardId)
-    this.emit('target-found')
-    this.cb.onCardFound(card.cardId)
+    this.markVisible(card.cardId)
+    this.announce(card.cardId)
     void this.ensureModel(card, anchor)
   }
 
-  private handleLost(card: ARCardConfig) {
+  private handleUnmappedFound(index: number) {
     if (this.disposed) return
-    this.visible.delete(card.cardId)
+    this.markVisible(unmappedKey(index))
+    this.announce(unmappedKey(index))
+  }
+
+  private handleLost(key: string) {
+    if (this.disposed) return
+    this.visible.delete(key)
     const remaining = [...this.visible]
     if (remaining.length > 0) {
-      this.cb.onCardFound(remaining[remaining.length - 1])
+      this.announce(remaining[remaining.length - 1])
       return
     }
     // Toleransi singkat: status "hilang sementara" baru tampil setelah jeda; progres kuis tidak disentuh.
@@ -286,10 +340,17 @@ export class AREngine {
   /** Memuat model sekali per kartu saat target pertama kali ditemukan. */
   private async ensureModel(card: ARCardConfig, anchor: MindARAnchor) {
     if (this.modelStates.has(card.cardId)) return
+    const modelPath = card.modelPath
+    if (modelPath === null) {
+      // Model belum tersedia menurut konfigurasi: tidak di-fetch sama sekali.
+      anchor.group.add(createPlaceholder())
+      this.setModelState(card.cardId, 'missing')
+      return
+    }
     this.setModelState(card.cardId, 'loading')
     const { signal } = this.abort
 
-    if (!(await assetExists(card.modelUrl, signal))) {
+    if (!(await assetExists(modelPath, signal))) {
       if (this.disposed) return
       // Kotak kawat penanda: membuktikan tracking bekerja walau model belum tersedia.
       anchor.group.add(createPlaceholder())
@@ -298,7 +359,7 @@ export class AREngine {
     }
 
     try {
-      const gltf = await this.loader.loadAsync(card.modelUrl)
+      const gltf = await this.loader.loadAsync(modelPath)
       if (this.disposed) {
         disposeObject(gltf.scene)
         return

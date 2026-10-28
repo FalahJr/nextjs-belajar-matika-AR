@@ -34,7 +34,14 @@ declare module 'mind-ar/dist/mindar-image-three.prod.js' {
     scene: Scene
     camera: PerspectiveCamera
     video: HTMLVideoElement | undefined
-    controller: { dispose(): void; stopProcessVideo(): void } | undefined
+    controller:
+      | {
+          dispose(): void
+          stopProcessVideo(): void
+          /** `[lebar, tinggi]` tiap target di file .mind (terisi setelah `start()`); panjangnya = jumlah target. */
+          markerDimensions: [number, number][] | null
+        }
+      | undefined
     shouldFaceUser: boolean
     start(): Promise<void>
     stop(): void
