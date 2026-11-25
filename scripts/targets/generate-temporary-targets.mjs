@@ -804,14 +804,456 @@ function drawFruitCard(g) {
 }
 
 // ---------------------------------------------------------------------------
+// Kartu 4 — Jajanan pasar (Pecahan Menjadi Persen)
+// ---------------------------------------------------------------------------
+
+function percentBadge(g, x, y, r, pct, color, label) {
+  g.beginPath()
+  g.arc(x, y, r, 0, TAU)
+  g.fillStyle = '#ffffff'
+  g.fill()
+  g.beginPath()
+  g.moveTo(x, y)
+  g.arc(x, y, r - 10, -Math.PI / 2, -Math.PI / 2 + (pct / 100) * TAU)
+  g.closePath()
+  g.fillStyle = color
+  g.fill()
+  g.beginPath()
+  g.arc(x, y, r, 0, TAU)
+  g.lineWidth = 8
+  g.strokeStyle = '#1e1b4b'
+  g.stroke()
+  text(g, label, x, y + 4, { size: r * 0.62, color: '#1e1b4b', stroke: '#ffffff', strokeWidth: 10 })
+}
+
+function klepon(g, rand, x, y, r) {
+  g.beginPath()
+  g.arc(x, y, r, 0, TAU)
+  g.fillStyle = '#4d7c0f'
+  g.fill()
+  g.beginPath()
+  g.arc(x, y, r - 7, 0, TAU)
+  g.fillStyle = '#84cc16'
+  g.fill()
+  g.fillStyle = '#ffffff'
+  for (let i = 0; i < 16; i++) {
+    const a = rand() * TAU
+    const d = rand() * (r - 14)
+    g.beginPath()
+    g.ellipse(x + Math.cos(a) * d, y + Math.sin(a) * d, 4 + rand() * 4, 3 + rand() * 3, rand() * TAU, 0, TAU)
+    g.fill()
+  }
+}
+
+function ondeOnde(g, rand, x, y, r) {
+  g.beginPath()
+  g.arc(x, y, r, 0, TAU)
+  g.fillStyle = '#7c2d12'
+  g.fill()
+  g.beginPath()
+  g.arc(x, y, r - 6, 0, TAU)
+  g.fillStyle = '#d97706'
+  g.fill()
+  g.fillStyle = '#fffbeb'
+  for (let i = 0; i < 26; i++) {
+    const a = rand() * TAU
+    const d = rand() * (r - 12)
+    g.beginPath()
+    g.ellipse(x + Math.cos(a) * d, y + Math.sin(a) * d, 3.5, 2.2, rand() * TAU, 0, TAU)
+    g.fill()
+  }
+}
+
+function kueLapis(g, x, y, w, h, angle) {
+  g.save()
+  g.translate(x, y)
+  g.rotate(angle)
+  const bands = 9
+  const bh = h / bands
+  for (let i = 0; i < bands; i++) {
+    g.fillStyle = ['#f472b6', '#fff1f2', '#be185d'][i % 3]
+    g.fillRect(-w / 2, -h / 2 + i * bh, w, bh + 1)
+  }
+  g.lineWidth = 7
+  g.strokeStyle = '#500724'
+  g.strokeRect(-w / 2, -h / 2, w, h)
+  g.restore()
+}
+
+function drawSnackCard(g) {
+  const rand = rng(404)
+  const accent = '#6d28d9'
+
+  // Daun pisang: gradasi hijau + urat daun miring acak
+  const leaf = g.createLinearGradient(0, 0, W, H)
+  leaf.addColorStop(0, '#14532d')
+  leaf.addColorStop(1, '#65a30d')
+  g.fillStyle = leaf
+  g.fillRect(0, 0, W, H)
+  for (let i = 0; i < 120; i++) {
+    const x = rand() * W
+    const y = rand() * H
+    const len = 120 + rand() * 330
+    const a = -0.55 + rand() * 0.3
+    g.strokeStyle = rand() < 0.5 ? 'rgba(220,252,231,0.30)' : 'rgba(6,78,59,0.35)'
+    g.lineWidth = 2 + rand() * 6
+    g.beginPath()
+    g.moveTo(x, y)
+    g.quadraticCurveTo(x + Math.cos(a) * len * 0.5, y + Math.sin(a) * len * 0.5 + rand() * 30, x + Math.cos(a) * len, y + Math.sin(a) * len)
+    g.stroke()
+  }
+  for (let i = 0; i < 60; i++) {
+    g.fillStyle = `rgba(254,240,138,${0.12 + rand() * 0.2})`
+    blob(g, rand, rand() * W, rand() * H, 14 + rand() * 26, 8, 0.6)
+    g.fill()
+  }
+
+  // Tampah anyaman bambu
+  const cx = 500
+  const cy = 735
+  g.beginPath()
+  g.arc(cx + 12, cy + 18, 372, 0, TAU)
+  g.fillStyle = 'rgba(0,0,0,0.28)'
+  g.fill()
+  g.beginPath()
+  g.arc(cx, cy, 368, 0, TAU)
+  g.fillStyle = '#e8c27c'
+  g.fill()
+  g.save()
+  g.beginPath()
+  g.arc(cx, cy, 366, 0, TAU)
+  g.clip()
+  for (let r = 350; r > 15; r -= 20) {
+    g.beginPath()
+    g.arc(cx, cy, r, 0, TAU)
+    g.lineWidth = 8 + rand() * 6
+    g.strokeStyle = rand() < 0.5 ? '#b8803a' : '#d6a560'
+    g.stroke()
+  }
+  for (let i = 0; i < 44; i++) {
+    const a = rand() * TAU
+    g.strokeStyle = `rgba(120,70,20,${0.25 + rand() * 0.35})`
+    g.lineWidth = 2 + rand() * 4
+    g.beginPath()
+    g.moveTo(cx, cy)
+    g.lineTo(cx + Math.cos(a) * 370, cy + Math.sin(a) * 370)
+    g.stroke()
+  }
+  g.restore()
+  g.beginPath()
+  g.arc(cx, cy, 368, 0, TAU)
+  g.lineWidth = 18
+  g.strokeStyle = '#7c4a1e'
+  g.stroke()
+
+  // Daun pandan alas jajanan
+  g.save()
+  g.beginPath()
+  g.arc(cx, cy, 300, 0, TAU)
+  g.fillStyle = '#166534'
+  g.fill()
+  g.restore()
+
+  kueLapis(g, 500, 560, 330, 170, -0.1)
+  for (const [x, y] of [[300, 790], [380, 860], [450, 780], [340, 710], [250, 870], [430, 930]]) klepon(g, rand, x, y, 52)
+  for (const [x, y] of [[620, 800], [700, 870], [570, 900], [680, 760], [640, 960]]) ondeOnde(g, rand, x, y, 50)
+  tag(g, 'kue lapis', 500, 440, { fill: '#fbcfe8', size: 34, angle: 0.04 })
+
+  percentBadge(g, 838, 345, 98, 50, '#f59e0b', '50%')
+  percentBadge(g, 165, 1115, 92, 25, '#10b981', '25%')
+  tag(g, '½ = 50%', 838, 480, { fill: '#fef08a', size: 34, angle: -0.05 })
+  tag(g, '¼ = 25%', 300, 1170, { fill: '#a7f3d0', size: 34, angle: 0.05 })
+
+  chrome(g, {
+    seed: 444,
+    number: '04',
+    kind: 'JAJANAN',
+    title: 'Pecahan → Persen',
+    titleY: 185,
+    accent,
+    tints: ['#ddd6fe', '#2e1065', '#fde68a', '#f472b6'],
+    header: 'bottom',
+    logo: 'left',
+    note: 'right',
+    cardId: 'jajanan-ubah-persen',
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Kartu 5 — Pizza berurutan (Mengurutkan Pecahan)
+// ---------------------------------------------------------------------------
+
+/** Pizza dibagi 4; `shown` potong digambar penuh, sisanya hanya garis putus-putus. */
+function quarterPizza(g, rand, cx, cy, R, shown) {
+  for (let k = 0; k < 4; k++) {
+    const a0 = -Math.PI / 2 + (k * TAU) / 4
+    const a1 = a0 + TAU / 4
+    g.beginPath()
+    g.moveTo(cx, cy)
+    g.arc(cx, cy, R, a0, a1)
+    g.closePath()
+    if (k < shown) {
+      g.fillStyle = '#c2410c'
+      g.fill()
+      g.beginPath()
+      g.moveTo(cx, cy)
+      g.arc(cx, cy, R - 16, a0, a1)
+      g.closePath()
+      g.fillStyle = '#fde047'
+      g.fill()
+      for (let i = 0; i < 3; i++) {
+        const a = a0 + 0.2 + rand() * (a1 - a0 - 0.4)
+        const d = R * (0.3 + rand() * 0.45)
+        g.beginPath()
+        g.arc(cx + Math.cos(a) * d, cy + Math.sin(a) * d, 13, 0, TAU)
+        g.fillStyle = i === 1 ? '#15803d' : '#b91c1c'
+        g.fill()
+      }
+      g.lineWidth = 4
+      g.strokeStyle = '#7c2d12'
+      g.stroke()
+    } else {
+      g.fillStyle = 'rgba(255,255,255,0.12)'
+      g.fill()
+      g.setLineDash([10, 9])
+      g.lineWidth = 4
+      g.strokeStyle = '#fef3c7'
+      g.stroke()
+      g.setLineDash([])
+    }
+  }
+}
+
+function drawSortPizzaCard(g) {
+  const rand = rng(505)
+  const accent = '#a16207'
+
+  // Meja kayu gelap dengan serat acak, remah tepung, basil, dan irisan tomat
+  g.fillStyle = '#5b3a1a'
+  g.fillRect(0, 0, W, H)
+  for (let i = 0; i < 90; i++) {
+    const y = rand() * H
+    g.strokeStyle = rand() < 0.5 ? 'rgba(254,215,170,0.18)' : 'rgba(30,15,5,0.4)'
+    g.lineWidth = 2 + rand() * 7
+    g.beginPath()
+    g.moveTo(0, y)
+    g.bezierCurveTo(250, y + rand() * 60 - 30, 700, y + rand() * 60 - 30, W, y + rand() * 40 - 20)
+    g.stroke()
+  }
+  for (let i = 0; i < 160; i++) {
+    g.fillStyle = `rgba(255,251,235,${0.2 + rand() * 0.5})`
+    g.beginPath()
+    g.arc(rand() * W, 250 + rand() * 1000, 1.5 + rand() * 5, 0, TAU)
+    g.fill()
+  }
+  for (let i = 0; i < 22; i++) {
+    g.save()
+    g.translate(40 + rand() * (W - 80), 270 + rand() * 980)
+    g.rotate(rand() * TAU)
+    g.beginPath()
+    g.ellipse(0, 0, 16 + rand() * 12, 8 + rand() * 6, 0, 0, TAU)
+    g.fillStyle = '#16a34a'
+    g.fill()
+    g.restore()
+  }
+  for (let i = 0; i < 9; i++) {
+    const x = 60 + rand() * (W - 120)
+    const y = 280 + rand() * 960
+    g.beginPath()
+    g.arc(x, y, 20 + rand() * 8, 0, TAU)
+    g.fillStyle = '#dc2626'
+    g.fill()
+    g.beginPath()
+    g.arc(x, y, 9, 0, TAU)
+    g.fillStyle = '#fecaca'
+    g.fill()
+  }
+
+  // Tiga baris: pizza utuh (1) + pizza terbagi 4 dengan 1, 2, atau 3 potong → 1¼ < 1½ < 1¾
+  const rows = [
+    { y: 440, shown: 1, whole: '1', top: '1', bottom: '4' },
+    { y: 760, shown: 2, whole: '1', top: '1', bottom: '2' },
+    { y: 1080, shown: 3, whole: '1', top: '3', bottom: '4' },
+  ]
+  rows.forEach((row, i) => {
+    g.fillStyle = 'rgba(255,251,235,0.9)'
+    roundRect(g, 60, row.y - 140, W - 120, 280, 40)
+    g.fill()
+    g.lineWidth = 6
+    g.strokeStyle = '#7c2d12'
+    g.stroke()
+    quarterPizza(g, rand, 245, row.y, 112, 4)
+    g.beginPath()
+    g.arc(245, row.y, 124, 0, TAU)
+    g.lineWidth = 6
+    g.strokeStyle = '#78350f'
+    g.stroke()
+    text(g, '+', 400, row.y, { size: 70, color: '#7c2d12' })
+    quarterPizza(g, rand, 555, row.y, 112, row.shown)
+    fractionBadge(g, 830, row.y, 84, row.top, row.bottom, { fill: '#fde68a', ring: accent, whole: row.whole })
+    if (i < rows.length - 1) {
+      g.save()
+      g.translate(830, row.y + 160)
+      g.beginPath()
+      g.moveTo(-30, 0)
+      g.lineTo(30, 0)
+      g.lineTo(0, 34)
+      g.closePath()
+      g.fillStyle = '#fef3c7'
+      g.fill()
+      g.lineWidth = 5
+      g.strokeStyle = '#7c2d12'
+      g.stroke()
+      g.restore()
+    }
+  })
+  tag(g, 'kecil → besar', 270, 280, { fill: '#fef08a', size: 36, angle: -0.04 })
+
+  chrome(g, {
+    seed: 555,
+    number: '05',
+    kind: 'PIZZA',
+    title: 'Mengurutkan Pecahan',
+    titleY: 205,
+    accent,
+    tints: ['#fde68a', '#451a03', '#fb923c', '#fef3c7'],
+    header: 'top',
+    logo: 'left',
+    note: 'center',
+    cardId: 'pizza-urut-campuran',
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Kartu 6 — Kue dalam kotak (Operasi Hitung Pecahan)
+// ---------------------------------------------------------------------------
+
+const PASTELS = ['#fbcfe8', '#bae6fd', '#bbf7d0', '#fde68a', '#ddd6fe', '#fed7aa']
+
+function mochi(g, rand, x, y, r) {
+  const color = PASTELS[Math.floor(rand() * PASTELS.length)]
+  g.beginPath()
+  g.ellipse(x, y + r * 0.25, r, r * 0.85, 0, 0, TAU)
+  g.fillStyle = 'rgba(0,0,0,0.15)'
+  g.fill()
+  g.beginPath()
+  g.moveTo(x - r, y + r * 0.3)
+  g.bezierCurveTo(x - r, y - r * 1.1, x + r, y - r * 1.1, x + r, y + r * 0.3)
+  g.bezierCurveTo(x + r, y + r * 0.85, x - r, y + r * 0.85, x - r, y + r * 0.3)
+  g.fillStyle = color
+  g.fill()
+  g.lineWidth = 4
+  g.strokeStyle = '#831843'
+  g.stroke()
+  g.fillStyle = '#831843'
+  g.beginPath()
+  g.arc(x - r * 0.35, y + r * 0.05, 4.5, 0, TAU)
+  g.arc(x + r * 0.35, y + r * 0.05, 4.5, 0, TAU)
+  g.fill()
+  g.beginPath()
+  g.arc(x, y + r * 0.22, r * 0.18, 0.1 * Math.PI, 0.9 * Math.PI)
+  g.lineWidth = 3
+  g.stroke()
+  g.fillStyle = rand() < 0.5 ? '#f43f5e' : '#fb923c'
+  for (let i = 0; i < 3; i++) {
+    g.beginPath()
+    g.arc(x - r * 0.5 + rand() * r, y - r * 0.55 + rand() * r * 0.25, 3 + rand() * 2, 0, TAU)
+    g.fill()
+  }
+}
+
+function drawCakeCard(g) {
+  const rand = rng(606)
+  const accent = '#be185d'
+
+  // Latar pastel dengan taburan sprinkle acak
+  const bg = g.createLinearGradient(0, 0, W, H)
+  bg.addColorStop(0, '#fdf2f8')
+  bg.addColorStop(1, '#ecfeff')
+  g.fillStyle = bg
+  g.fillRect(0, 0, W, H)
+  const sprinkle = ['#f43f5e', '#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#14b8a6']
+  for (let i = 0; i < 520; i++) {
+    g.save()
+    g.translate(rand() * W, 240 + rand() * 1000)
+    g.rotate(rand() * TAU)
+    g.fillStyle = sprinkle[Math.floor(rand() * sprinkle.length)]
+    roundRect(g, -10, -3.5, 20, 7, 3.5)
+    g.fill()
+    g.restore()
+  }
+
+  // Enam kotak kue (3 × 2), masing-masing 4 mochi → 24 kue
+  const cols = [105, 390, 675]
+  const rowsY = [300, 810]
+  let n = 0
+  for (const by of rowsY) {
+    for (const bx of cols) {
+      const lid = PASTELS[(n * 2 + 1) % PASTELS.length]
+      g.fillStyle = 'rgba(0,0,0,0.12)'
+      roundRect(g, bx + 8, by + 12, 250, 330, 30)
+      g.fill()
+      g.fillStyle = '#fffbeb'
+      roundRect(g, bx, by, 250, 330, 30)
+      g.fill()
+      g.lineWidth = 7
+      g.strokeStyle = '#831843'
+      g.stroke()
+      g.fillStyle = lid
+      roundRect(g, bx, by, 250, 66, 30)
+      g.fill()
+      g.strokeStyle = '#831843'
+      g.stroke()
+      text(g, `kotak ${n + 1}`, bx + 125, by + 34, { size: 30, color: '#831843' })
+      for (let c = 0; c < 4; c++) {
+        mochi(g, rand, bx + 70 + (c % 2) * 110, by + 140 + Math.floor(c / 2) * 110, 40)
+      }
+      n++
+    }
+  }
+
+  // Lambang operasi hitung di antara dua baris kotak
+  const ops = [['+', '#f43f5e'], ['−', '#3b82f6'], ['×', '#16a34a'], ['÷', '#d97706']]
+  ops.forEach(([sym, color], i) => {
+    const x = 190 + i * 207
+    g.beginPath()
+    g.arc(x, 725, 52, 0, TAU)
+    g.fillStyle = color
+    g.fill()
+    g.lineWidth = 7
+    g.strokeStyle = '#ffffff'
+    g.stroke()
+    text(g, sym, x, 728, { size: 70, color: '#ffffff', stroke: '#1e1b4b', strokeWidth: 8 })
+  })
+  tag(g, '24 ÷ 6 = 4', 500, 1190, { fill: '#fde68a', size: 44, angle: -0.03 })
+
+  chrome(g, {
+    seed: 666,
+    number: '06',
+    kind: 'KUE',
+    title: 'Operasi Hitung',
+    titleY: 185,
+    accent,
+    tints: ['#fbcfe8', '#500724', '#a7f3d0', '#fde047'],
+    header: 'bottom',
+    logo: 'right',
+    note: 'left',
+    cardId: 'kue-operasi-hitung',
+  })
+}
+
+// ---------------------------------------------------------------------------
 
 const DRAWERS = {
   'pizza-pecahan-biasa': drawPizzaCard,
   'susu-pecahan-campuran': drawMilkCard,
   'piring-buah-desimal': drawFruitCard,
+  'jajanan-ubah-persen': drawSnackCard,
+  'pizza-urut-campuran': drawSortPizzaCard,
+  'kue-operasi-hitung': drawCakeCard,
 }
 
-/** Lembar A4 PDF: kartu ukuran fisik 9 × 12,6 cm, garis potong putus-putus. */
+/** Lembar A4 PDF: kartu ukuran fisik 9 × 12,6 cm (4 per halaman), garis potong putus-putus. */
 async function writePrintSheet(files, outFile) {
   const PT_PER_CM = 72 / 2.54
   const A4 = [21 * PT_PER_CM, 29.7 * PT_PER_CM]
@@ -820,45 +1262,51 @@ async function writePrintSheet(files, outFile) {
   const gap = 0.8 * PT_PER_CM
   const x0 = (A4[0] - 2 * cw - gap) / 2
   const y0 = 1.4 * PT_PER_CM
+  const perPage = 4
   const pdf = createCanvas(A4[0], A4[1], 'pdf')
   const g = pdf.getContext('2d')
-  g.fillStyle = '#ffffff'
-  g.fillRect(0, 0, A4[0], A4[1])
-  for (let i = 0; i < files.length; i++) {
-    const x = x0 + (i % 2) * (cw + gap)
-    const y = y0 + Math.floor(i / 2) * (ch + gap)
-    // Skala lewat transformasi (bukan drawImage dengan ukuran tujuan) agar PNG disisipkan pada resolusi
-    // penuh (±280 dpi), bukan di-resample ke 72 dpi.
-    const image = await loadImage(files[i])
-    g.save()
-    g.translate(x, y)
-    g.scale(cw / image.width, ch / image.height)
-    g.drawImage(image, 0, 0)
-    g.restore()
-    g.setLineDash([4, 4])
-    g.lineWidth = 0.6
-    g.strokeStyle = '#64748b'
-    g.strokeRect(x - 4, y - 4, cw + 8, ch + 8)
-    g.setLineDash([])
-  }
-  if (files.length < 4) {
-    const x = x0 + cw + gap + 12
-    const y = y0 + ch + gap + 24
-    g.fillStyle = '#1e1b4b'
-    g.font = `bold 13px ${FONT}`
-    g.textAlign = 'left'
-    g.textBaseline = 'top'
-    const lines = [
-      'Kartu target SEMENTARA',
-      'BelajarMatika AR',
-      '',
-      '• Cetak di HVS, skala 100%',
-      '  ("Actual size", bukan "Fit").',
-      '• Jangan dilaminasi mengkilap.',
-      '• Gunting di garis putus-putus.',
-      '• Bukan desain kartu final.',
-    ]
-    lines.forEach((l, i) => g.fillText(l, x, y + i * 20))
+  const pages = Math.ceil(files.length / perPage)
+  for (let page = 0; page < pages; page++) {
+    if (page > 0) g.addPage()
+    g.fillStyle = '#ffffff'
+    g.fillRect(0, 0, A4[0], A4[1])
+    const slice = files.slice(page * perPage, (page + 1) * perPage)
+    for (let i = 0; i < slice.length; i++) {
+      const x = x0 + (i % 2) * (cw + gap)
+      const y = y0 + Math.floor(i / 2) * (ch + gap)
+      // Skala lewat transformasi (bukan drawImage dengan ukuran tujuan) agar PNG disisipkan pada resolusi
+      // penuh (±280 dpi), bukan di-resample ke 72 dpi.
+      const image = await loadImage(slice[i])
+      g.save()
+      g.translate(x, y)
+      g.scale(cw / image.width, ch / image.height)
+      g.drawImage(image, 0, 0)
+      g.restore()
+      g.setLineDash([4, 4])
+      g.lineWidth = 0.6
+      g.strokeStyle = '#64748b'
+      g.strokeRect(x - 4, y - 4, cw + 8, ch + 8)
+      g.setLineDash([])
+    }
+    if (slice.length < perPage) {
+      const x = x0 + (slice.length % 2) * (cw + gap) + 12
+      const y = y0 + Math.floor(slice.length / 2) * (ch + gap) + 24
+      g.fillStyle = '#1e1b4b'
+      g.font = `bold 13px ${FONT}`
+      g.textAlign = 'left'
+      g.textBaseline = 'top'
+      const lines = [
+        'Kartu target SEMENTARA',
+        'BelajarMatika AR',
+        '',
+        '• Cetak di HVS, skala 100%',
+        '  ("Actual size", bukan "Fit").',
+        '• Jangan dilaminasi mengkilap.',
+        '• Gunting di garis putus-putus.',
+        '• Bukan desain kartu final.',
+      ]
+      lines.forEach((l, i) => g.fillText(l, x, y + i * 20))
+    }
   }
   writeFileSync(outFile, pdf.toBuffer('application/pdf'))
 }

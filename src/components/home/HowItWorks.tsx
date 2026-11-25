@@ -4,7 +4,7 @@ const STEPS = [
   { icon: CreditCard, title: 'Pilih kartu', text: 'Ambil salah satu dari enam kartu belajar.', color: 'bg-rose-100 text-rose-700' },
   { icon: ScanLine, title: 'Scan kartu', text: 'Tekan Mulai Scan dan arahkan kamera ke kartu.', color: 'bg-sky-100 text-sky-700' },
   { icon: Cuboid, title: 'Amati objek 3D', text: 'Lihat objek 3D muncul di atas kartu.', color: 'bg-amber-100 text-amber-800' },
-  { icon: ListChecks, title: 'Jawab 3 soal', text: 'Pilih jawaban A–D dan lihat nilaimu.', color: 'bg-emerald-100 text-emerald-700' },
+  { icon: ListChecks, title: 'Jawab 3 soal', text: 'Pilih jawabanmu dan lihat nilaimu.', color: 'bg-emerald-100 text-emerald-700' },
 ]
 
 export function HowItWorks() {

@@ -19,7 +19,7 @@ export function About() {
           <ul className="mt-3 grid list-disc gap-2 pl-5 font-medium text-indigo-50">
             <li>Kamera hanya dinyalakan setelah kamu menekan <strong>Mulai Scan</strong>.</li>
             <li>Tidak ada login dan tidak ada data nilai yang disimpan; memuat ulang halaman mengulang dari awal.</li>
-            <li>Kuis kartu berisi 3 soal; latihan biasa berisi 5 soal tanpa kamera.</li>
+            <li>Kuis kartu berisi 3 soal; Latihan Soal berisi 29 soal tanpa kamera.</li>
             <li>Didampingi guru atau orang tua akan lebih menyenangkan.</li>
           </ul>
         </div>

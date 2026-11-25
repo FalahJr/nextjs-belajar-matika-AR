@@ -17,6 +17,7 @@ export function Footer() {
           <ul className="grid gap-2 font-semibold">
             <li><Link className="hover:text-white" to="/">Beranda</Link></li>
             <li><Link className="hover:text-white" to="/scan">Scan AR</Link></li>
+            <li><Link className="hover:text-white" to="/materi">Materi</Link></li>
             <li><Link className="hover:text-white" to="/latihan">Latihan Soal</Link></li>
             <li><Link className="hover:text-white" to="/#tentang">Tentang</Link></li>
           </ul>

@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import { Camera, RefreshCw, RotateCcw, SwitchCamera, TriangleAlert, X } from 'lucide-react'
+import { Camera, Move3d, Plus, Minus, RefreshCw, RotateCcw, SwitchCamera, TriangleAlert, X } from 'lucide-react'
 import type { ModelState } from '../../ar/arEngine'
 import type { ARStatus as Status } from '../../types/ar'
 import { Button } from '../ui/ButtonLink'
@@ -17,6 +17,10 @@ type Props = {
   onStart: () => void
   onStop: () => void
   onSwitchCamera: () => void
+  /** Zoom model 3D: faktor pengali (>1 memperbesar, <1 memperkecil). */
+  onZoom: (factor: number) => void
+  /** Mengembalikan sudut & zoom model 3D ke posisi awal. */
+  onResetView: () => void
   onBack: () => void
   onDemo: () => void
 }
@@ -39,17 +43,20 @@ export function ARCamera({
   onStart,
   onStop,
   onSwitchCamera,
+  onZoom,
+  onResetView,
   onBack,
   onDemo,
 }: Props) {
   const showCover = COVER_STATES.includes(status)
   const live = !showCover
+  const interactive = status === 'target-found' && activeModelState === 'ready' && unmappedTarget === null
 
   return (
     <div className="relative isolate h-[52dvh] min-h-72 overflow-hidden rounded-3xl bg-indigo-950 shadow-soft lg:h-[calc(100dvh-9rem)] lg:min-h-[28rem]">
       {/* MindAR memberi <video> lebar inline (mode "cover"); `max-width: 100%` dari preflight Tailwind
           memotongnya sehingga video tampil letterbox dan model 3D bergeser dari kartu. */}
-      <div ref={containerRef} className="absolute inset-0 [&_video]:max-w-none" />
+      <div ref={containerRef} className="absolute inset-0 touch-none select-none [&_video]:max-w-none" />
 
       {live && (
         <>
@@ -75,6 +82,31 @@ export function ARCamera({
               <X className="size-5" aria-hidden="true" /> Berhenti
             </button>
           </div>
+          {interactive && (
+            <>
+              <div className="absolute right-3 top-1/2 z-10 grid -translate-y-1/2 gap-2">
+                {[
+                  { label: 'Perbesar', icon: Plus, onClick: () => onZoom(1.25) },
+                  { label: 'Perkecil', icon: Minus, onClick: () => onZoom(0.8) },
+                  { label: 'Kembalikan posisi objek 3D', icon: RotateCcw, onClick: onResetView },
+                ].map(({ label, icon: Icon, onClick }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={onClick}
+                    className="grid size-11 place-items-center rounded-full bg-white/90 text-indigo-900 shadow"
+                    aria-label={label}
+                  >
+                    <Icon className="size-5" aria-hidden="true" />
+                  </button>
+                ))}
+              </div>
+              <p className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex items-center justify-center gap-2 rounded-2xl bg-white/90 px-4 py-2.5 text-center text-sm font-bold text-indigo-950">
+                <Move3d className="size-5 shrink-0" aria-hidden="true" />
+                Geser untuk memutar objek. Cubit atau scroll untuk zoom.
+              </p>
+            </>
+          )}
           {(status === 'scanning' || status === 'target-lost') && (
             <p className="absolute inset-x-3 bottom-3 z-10 rounded-2xl bg-white/90 px-4 py-2.5 text-center text-sm font-bold text-indigo-950">
               {status === 'scanning'

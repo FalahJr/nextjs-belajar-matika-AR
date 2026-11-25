@@ -1,8 +1,26 @@
 {
-  "pizza-pecahan-biasa": { "path": "/assets/models/pizza-pecahan-biasa.glb", "available": true },
-  "susu-pecahan-campuran": { "path": "/assets/models/susu-pecahan-campuran.glb", "available": true },
-  "piring-buah-desimal": { "path": "/assets/models/piring-buah-desimal.glb", "available": true },
-  "jajanan-ubah-persen": { "path": "/assets/models/jajanan-ubah-persen.glb", "available": false },
-  "pizza-urut-campuran": { "path": "/assets/models/pizza-urut-campuran.glb", "available": false },
-  "kue-operasi-hitung": { "path": "/assets/models/kue-operasi-hitung.glb", "available": false }
+  "pizza-pecahan-biasa": {
+    "path": "/assets/models/pizza-pecahan-biasa.glb",
+    "available": true
+  },
+  "susu-pecahan-campuran": {
+    "path": "/assets/models/susu-pecahan-campuran.glb",
+    "available": true
+  },
+  "piring-buah-desimal": {
+    "path": "/assets/models/piring-buah-desimal.glb",
+    "available": true
+  },
+  "jajanan-ubah-persen": {
+    "path": "/assets/models/jajanan-ubah-persen.glb",
+    "available": true
+  },
+  "pizza-urut-campuran": {
+    "path": "/assets/models/pizza-urut-campuran.glb",
+    "available": true
+  },
+  "kue-operasi-hitung": {
+    "path": "/assets/models/kue-operasi-hitung.glb",
+    "available": true
+  }
 }

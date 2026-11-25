@@ -16,14 +16,9 @@ describe('konfigurasi target AR', () => {
     expect(validateTargetSet(wildan)).toEqual([])
   })
 
-  it('set sementara memetakan tepat tiga kartu yang modelnya tersedia, urut 0–2', () => {
+  it('set sementara memetakan keenam kartu secara berurutan 0–5', () => {
     const cards = buildCards(AR_CARD_CONTENT, AR_MODELS, temporary)
-    const mapped = cards.filter((c) => c.targetIndex !== null).map((c) => [c.targetIndex, c.cardId])
-    expect(mapped).toEqual([
-      [0, 'pizza-pecahan-biasa'],
-      [1, 'susu-pecahan-campuran'],
-      [2, 'piring-buah-desimal'],
-    ])
+    expect(cards.map((c) => [c.targetIndex, c.cardId])).toEqual(CARD_IDS.map((id, i) => [i, id]))
     for (const t of temporary.targets) {
       expect(t.image).toMatch(/^\/assets\/targets\/temporary\/.+\.(png|jpe?g)$/)
       expect(AR_MODELS[t.cardId as keyof typeof AR_MODELS].available).toBe(true)
@@ -35,10 +30,11 @@ describe('konfigurasi target AR', () => {
     expect(cards.every((c) => c.targetIndex === null)).toBe(true)
   })
 
-  it('model yang belum tersedia tidak punya modelPath (tidak pernah dimuat)', () => {
-    const missing = AR_CARDS.filter((c) => c.modelStatus === 'missing').map((c) => c.cardId)
-    expect(missing).toEqual(['jajanan-ubah-persen', 'pizza-urut-campuran', 'kue-operasi-hitung'])
-    for (const c of AR_CARDS) {
+  it('model hanya punya modelPath bila ditandai tersedia (yang belum ada tidak pernah dimuat)', () => {
+    const models = { ...AR_MODELS, 'kue-operasi-hitung': { ...AR_MODELS['kue-operasi-hitung'], available: false } }
+    const cards = buildCards(AR_CARD_CONTENT, models, temporary)
+    expect(cards.filter((c) => c.modelStatus === 'missing').map((c) => c.cardId)).toEqual(['kue-operasi-hitung'])
+    for (const c of cards) {
       expect(c.modelPath === null).toBe(c.modelStatus === 'missing')
       expect(c.plannedModelPath).toBe(`/assets/models/${c.cardId}.glb`)
     }
@@ -46,8 +42,9 @@ describe('konfigurasi target AR', () => {
 
   it('lookup kartu memakai konfigurasi terpusat', () => {
     expect(getCardByTargetIndex(1)?.cardId).toBe('susu-pecahan-campuran')
-    expect(getCardByTargetIndex(3)).toBeUndefined()
-    expect(getCardById('kue-operasi-hitung')?.targetIndex).toBeNull()
+    expect(getCardByTargetIndex(3)?.cardId).toBe('jajanan-ubah-persen')
+    expect(getCardByTargetIndex(6)).toBeUndefined()
+    expect(getCardById('kue-operasi-hitung')?.targetIndex).toBe(5)
   })
 
   it('validator manifest mendeteksi indeks/cardId ganda dan cardId asing', () => {

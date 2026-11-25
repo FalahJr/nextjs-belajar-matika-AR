@@ -47,6 +47,8 @@ export function ARSession({ onExit, onDemo }: Props) {
         onStart={() => void ar.start()}
         onStop={ar.stop}
         onSwitchCamera={ar.switchCamera}
+        onZoom={ar.zoomModel}
+        onResetView={ar.resetModelView}
         onBack={exit}
         onDemo={() => {
           ar.stop()

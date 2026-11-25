@@ -95,6 +95,9 @@ export function useAREngine() {
     void engineRef.current?.switchCamera()
   }, [])
 
+  const zoomModel = useCallback((factor: number) => engineRef.current?.zoomBy(factor), [])
+  const resetModelView = useCallback(() => engineRef.current?.resetView(), [])
+
   const clearActiveCard = useCallback(() => setActiveCardId(null), [])
 
   return {
@@ -108,6 +111,8 @@ export function useAREngine() {
     start,
     stop,
     switchCamera,
+    zoomModel,
+    resetModelView,
     clearActiveCard,
   }
 }

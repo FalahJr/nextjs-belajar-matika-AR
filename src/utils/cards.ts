@@ -1,6 +1,8 @@
 import { AR_CARDS } from '../config/arTargets'
 import type { ARCardConfig } from '../types/ar'
-import { ANSWER_KEYS, type Question } from '../types/quiz'
+import { ANSWER_KEYS, type AnswerKey, type Question } from '../types/quiz'
+
+const REQUIRED_OPTION_KEYS: readonly AnswerKey[] = ['A', 'B', 'C']
 
 export function getCardByTargetIndex(
   targetIndex: number,
@@ -24,15 +26,20 @@ export function validateQuestions(questions: readonly Question[], expectedCount:
   }
   for (const q of questions) {
     if (!q.question.trim()) problems.push(`${q.id}: teks soal kosong`)
-    for (const key of ANSWER_KEYS) {
+    for (const key of REQUIRED_OPTION_KEYS) {
       if (!q.options[key]?.trim()) problems.push(`${q.id}: opsi ${key} kosong`)
     }
-    if (Object.keys(q.options).length !== ANSWER_KEYS.length) {
-      problems.push(`${q.id}: opsi harus tepat A–D`)
+    if (q.options.D !== undefined && !q.options.D.trim()) problems.push(`${q.id}: opsi D kosong`)
+    if (Object.keys(q.options).some((k) => !ANSWER_KEYS.includes(k as AnswerKey))) {
+      problems.push(`${q.id}: opsi harus A–C atau A–D`)
     }
-    if (!ANSWER_KEYS.includes(q.correctAnswer)) problems.push(`${q.id}: kunci jawaban tidak valid`)
-    const values = ANSWER_KEYS.map((k) => q.options[k]?.trim())
+    const present = ANSWER_KEYS.filter((k) => q.options[k] !== undefined)
+    if (!present.includes(q.correctAnswer)) problems.push(`${q.id}: kunci jawaban tidak valid`)
+    const values = present.map((k) => q.options[k]?.trim())
     if (new Set(values).size !== values.length) problems.push(`${q.id}: ada opsi yang sama`)
+    if (q.image && (!q.image.src.startsWith('/') || !q.image.alt.trim())) {
+      problems.push(`${q.id}: gambar soal butuh URL publik (diawali /) dan teks alt`)
+    }
   }
   const ids = questions.map((q) => q.id)
   if (new Set(ids).size !== ids.length) problems.push('ID soal tidak unik')

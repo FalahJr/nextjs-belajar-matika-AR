@@ -6,12 +6,15 @@ import {
   Clock,
   DirectionalLight,
   EdgesGeometry,
+  Euler,
   Group,
   LineBasicMaterial,
   LineSegments,
   Material,
+  Matrix4,
   Mesh,
   Object3D,
+  Quaternion,
   Texture,
   Vector3,
 } from 'three'
@@ -21,6 +24,7 @@ import { ACTIVE_TARGET_SET } from '../config/arTargets'
 import { AR_START_TIMEOUT_MS, MINDAR_TUNING, TARGET_LOST_GRACE_MS } from '../data/arConfig'
 import type { ARCardConfig, ARStatus } from '../types/ar'
 import { assetExists } from './assets'
+import { ModelGestures, ModelView, pixelsToRadians } from './modelGestures'
 
 export type ModelState = 'loading' | 'ready' | 'missing' | 'error'
 
@@ -68,6 +72,9 @@ export class AREngine {
   private lostTimer: ReturnType<typeof setTimeout> | undefined
   private readonly modelStates = new Map<string, ModelState>()
   private readonly mixers: AnimationMixer[] = []
+  /** Tampilan interaktif (rotasi/zoom) tiap model yang sudah dimuat, kunci = cardId. */
+  private readonly views = new Map<string, { view: ModelView; anchor: MindARAnchor }>()
+  private gestures: ModelGestures | null = null
   private readonly clock = new Clock()
   private readonly loader = new GLTFLoader()
 
@@ -125,6 +132,7 @@ export class AREngine {
       mindar.renderer.setAnimationLoop(() => {
         const dt = this.clock.getDelta()
         for (const m of this.mixers) m.update(dt)
+        for (const { view } of this.views.values()) view.update(dt)
         mindar.renderer.render(mindar.scene, mindar.camera)
       })
 
@@ -133,6 +141,11 @@ export class AREngine {
       this.checkTargetCount(mindar)
 
       this.ready = true
+      this.gestures = new ModelGestures(this.container, {
+        onRotate: (dx, dy) => this.rotateActive(dx, dy),
+        onZoom: (factor) => this.zoomBy(factor),
+        onReset: () => this.resetView(),
+      })
       this.resizeObserver = new ResizeObserver(() => {
         if (!this.disposed && this.ready) this.mindar?.resize()
       })
@@ -164,6 +177,16 @@ export class AREngine {
     }
   }
 
+  /** Memperbesar (>1) / memperkecil (<1) model kartu yang sedang terlihat. */
+  zoomBy(factor: number) {
+    this.activeView()?.view.zoomBy(factor)
+  }
+
+  /** Mengembalikan sudut dan zoom model kartu yang sedang terlihat ke posisi awal. */
+  resetView() {
+    this.activeView()?.view.reset()
+  }
+
   async hasMultipleCameras(): Promise<boolean> {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices()
@@ -181,6 +204,32 @@ export class AREngine {
   }
 
   // ---------------------------------------------------------------------------
+
+  /** Model milik kartu yang terakhir terdeteksi dan masih terlihat (null bila tidak ada). */
+  private activeView() {
+    if (this.disposed) return null
+    for (const key of [...this.visible].reverse()) {
+      const entry = this.views.get(key)
+      if (entry) return entry
+    }
+    return null
+  }
+
+  /**
+   * Geser di layar → putar model. Sumbu putar adalah sumbu LAYAR (atas & kanan) yang diterjemahkan ke ruang
+   * kartu, sehingga arah putar tetap sesuai jari walau kartu sedang miring atau diputar.
+   */
+  private rotateActive(dx: number, dy: number) {
+    const entry = this.activeView()
+    if (!entry) return
+    const q = new Quaternion()
+    entry.anchor.group.matrix.decompose(new Vector3(), q, new Vector3())
+    q.invert()
+    const screenUp = new Vector3(0, 1, 0).applyQuaternion(q)
+    const screenRight = new Vector3(1, 0, 0).applyQuaternion(q)
+    entry.view.rotate(screenUp, pixelsToRadians(dx))
+    entry.view.rotate(screenRight, pixelsToRadians(dy))
+  }
 
   private emit(status: ARStatus, message?: string) {
     if (!this.disposed) this.cb.onStatus(status, message)
@@ -364,7 +413,9 @@ export class AREngine {
         disposeObject(gltf.scene)
         return
       }
-      anchor.group.add(this.buildHolder(card, gltf.scene))
+      const view = this.buildView(card, gltf.scene)
+      anchor.group.add(view.spin)
+      this.views.set(card.cardId, { view, anchor })
       if (gltf.animations.length > 0) {
         const mixer = new AnimationMixer(gltf.scene)
         for (const clip of gltf.animations) mixer.clipAction(clip).play()
@@ -378,8 +429,12 @@ export class AREngine {
     }
   }
 
-  /** Memusatkan model di kartu, menempelkan dasarnya ke permukaan, dan menskalakan agar muat. */
-  private buildHolder(card: ARCardConfig, root: Object3D): Group {
+  /**
+   * Memusatkan model di kartu, menempelkan dasarnya ke permukaan, dan menskalakan agar muat.
+   * Hasilnya dibungkus `spin` yang titik putarnya di PUSAT model (bukan di dasar) agar model bisa
+   * diputar bebas 360° oleh pengguna. Pada posisi awal tampilan identik dengan model tanpa pembungkus.
+   */
+  private buildView(card: ARCardConfig, root: Object3D): ModelView {
     const box = new Box3().setFromObject(root)
     const size = box.getSize(new Vector3())
     const center = box.getCenter(new Vector3())
@@ -388,10 +443,20 @@ export class AREngine {
     const holder = new Group()
     holder.add(root)
     const footprint = Math.max(size.x, size.z) || 1
-    holder.scale.setScalar((0.8 * (card.modelScale ?? 1)) / footprint)
-    holder.rotation.set(...(card.modelRotation ?? [Math.PI / 2, 0, 0]))
-    holder.position.set(...(card.modelOffset ?? [0, 0, 0]))
-    return holder
+    const scale = (0.8 * (card.modelScale ?? 1)) / footprint
+    const rotation = new Euler(...(card.modelRotation ?? [Math.PI / 2, 0, 0]))
+    const offset = new Vector3(...(card.modelOffset ?? [0, 0, 0]))
+    holder.scale.setScalar(scale)
+    holder.rotation.copy(rotation)
+
+    // Pusat model di ruang kartu: dasar model + setengah tingginya, diputar/diskalakan seperti holder.
+    const pivot = new Vector3(0, size.y / 2, 0).multiplyScalar(scale).applyMatrix4(new Matrix4().makeRotationFromEuler(rotation)).add(offset)
+    holder.position.copy(offset).sub(pivot)
+
+    const view = new ModelView()
+    view.spin.position.copy(pivot)
+    view.spin.add(holder)
+    return view
   }
 
   /** Menghentikan track kamera, controller MindAR, dan elemen video. Aman dipanggil berulang. */
@@ -420,6 +485,9 @@ export class AREngine {
     clearTimeout(this.lostTimer)
     this.resizeObserver?.disconnect()
     this.resizeObserver = null
+    this.gestures?.dispose()
+    this.gestures = null
+    this.views.clear()
     this.visible.clear()
 
     const mindar = this.mindar

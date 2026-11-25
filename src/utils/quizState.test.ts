@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { PRACTICE_QUESTIONS as Q } from '../data/practiceQuestions'
+import { AR_CARDS } from '../config/arTargets'
 import { summarizeAnswers } from './scoring'
 import { INITIAL_QUIZ_STATE, advanceQuestion, answerQuestion, isFinished } from './quizState'
+
+const Q = AR_CARDS[0].questions
 
 describe('quizState', () => {
   it('tidak menghitung jawaban ganda untuk soal yang sama', () => {
@@ -24,12 +26,12 @@ describe('quizState', () => {
     let s = INITIAL_QUIZ_STATE
     Q.forEach((q, i) => {
       expect(isFinished(s, Q)).toBe(false)
-      // jawab benar untuk 4 soal pertama, salah untuk soal terakhir
+      // jawab benar untuk 2 soal pertama, salah untuk soal terakhir
       const wrong = q.correctAnswer === 'A' ? 'B' : 'A'
-      s = answerQuestion(s, Q, q.id, i < 4 ? q.correctAnswer : wrong)
+      s = answerQuestion(s, Q, q.id, i < 2 ? q.correctAnswer : wrong)
       s = advanceQuestion(s, Q)
     })
     expect(isFinished(s, Q)).toBe(true)
-    expect(summarizeAnswers(Q, s.answers)).toEqual({ correct: 4, total: 5, score: 80 })
+    expect(summarizeAnswers(Q, s.answers)).toEqual({ correct: 2, total: 3, score: 67 })
   })
 })

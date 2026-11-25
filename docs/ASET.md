@@ -12,8 +12,8 @@ Aplikasi memisahkan tiga hal yang bisa diganti secara terpisah tanpa mengubah ko
 `src/config/arTargets.ts` menggabungkan ketiganya menjadi `AR_CARDS` yang dipakai seluruh aplikasi.
 **`targetIndex` hanya ditulis di file manifest target** dan tidak tersebar di komponen.
 
-> Status saat ini: **3 kartu target SEMENTARA** (buatan project) sudah dikompilasi dan bisa dipakai menguji AR.
-> Kartu sementara **bukan desain final** untuk skripsi. Tiga model GLB lain belum tersedia.
+> Status saat ini: **6 kartu target SEMENTARA** (buatan project) sudah dikompilasi dan **keenam model GLB tersedia**,
+> jadi semua materi bisa diuji AR. Kartu sementara **bukan desain final** untuk skripsi.
 
 ---
 
@@ -24,12 +24,12 @@ Aplikasi memisahkan tiga hal yang bisa diganti secara terpisah tanpa mengubah ko
 | 1 | `pizza-pecahan-biasa` | Pecahan Biasa | ✅ `pizza-pecahan-biasa.glb` | ✅ `targetIndex` 0 |
 | 2 | `susu-pecahan-campuran` | Pecahan Campuran | ✅ `susu-pecahan-campuran.glb` | ✅ `targetIndex` 1 |
 | 3 | `piring-buah-desimal` | Pecahan Menjadi Desimal | ✅ `piring-buah-desimal.glb` | ✅ `targetIndex` 2 |
-| 4 | `jajanan-ubah-persen` | Pecahan Menjadi Persen | ❌ belum ada | — |
-| 5 | `pizza-urut-campuran` | Mengurutkan Pecahan | ❌ belum ada | — |
-| 6 | `kue-operasi-hitung` | Operasi Hitung Pecahan | ❌ belum ada | — |
+| 4 | `jajanan-ubah-persen` | Pecahan Menjadi Persen | ✅ `jajanan-ubah-persen.glb` | ✅ `targetIndex` 3 |
+| 5 | `pizza-urut-campuran` | Mengurutkan Pecahan | ✅ `pizza-urut-campuran.glb` (paling berat: ±80 rb segitiga, 2,3 MB) | ✅ `targetIndex` 4 |
+| 6 | `kue-operasi-hitung` | Operasi Hitung Pecahan | ✅ `kue-operasi-hitung.glb` | ✅ `targetIndex` 5 |
 
-Materi 4–6 tetap muncul di landing page dan Mode Demo (soal bisa dicoba), tetapi tidak punya target dan modelnya
-tidak pernah dimuat (`available: false`). Nama file di `models.json` untuk materi ini hanyalah **nama rencana**.
+Model yang belum ada ditandai `"available": false` di `models.json`. Model itu tidak pernah dimuat, materinya tetap bisa
+dicoba di Mode Demo, dan nama filenya hanya **nama rencana**. Saat ini tidak ada model yang berstatus demikian.
 
 ## 2. Lokasi file
 
@@ -39,8 +39,11 @@ public/assets/targets/
 │   ├── 01-pizza-pecahan-biasa.png      ← gambar target sementara (1000×1400 px)
 │   ├── 02-susu-pecahan-campuran.png
 │   ├── 03-piring-buah-desimal.png
-│   └── kartu-sementara-a4.pdf          ← lembar cetak A4 (3 kartu ukuran 9 × 12,6 cm)
-├── temporary-targets.mind              ← hasil kompilasi (3 target)
+│   ├── 04-jajanan-ubah-persen.png
+│   ├── 05-pizza-urut-campuran.png
+│   ├── 06-kue-operasi-hitung.png
+│   └── kartu-sementara-a4.pdf          ← lembar cetak A4, 2 halaman (6 kartu ukuran 9 × 12,6 cm)
+├── temporary-targets.mind              ← hasil kompilasi (6 target)
 ├── temporary-targets.mind.json         ← catatan kompilasi: urutan, sha256 gambar & .mind, versi mind-ar
 └── wildan/                             ← tempat aset final dari Wildan
 public/assets/models/*.glb              ← model 3D
@@ -51,14 +54,14 @@ scripts/targets/                        ← generator, compiler, verifikasi
 
 | Perintah | Fungsi |
 |---|---|
-| `npm run targets:generate` | Menggambar ulang 3 PNG kartu sementara + PDF A4 (deterministik). |
+| `npm run targets:generate` | Menggambar ulang 6 PNG kartu sementara + PDF A4 (deterministik). |
 | `npm run compile:targets` | Mengompilasi gambar set `temporary` menjadi `.mind`, menulis catatan kompilasi, lalu memverifikasi. |
 | `npm run compile:targets -- --set wildan` | Sama, untuk gambar kartu final dari Wildan. |
 | `npm run verify:targets` (`-- --set wildan`) | Hanya memverifikasi (tanpa kompilasi ulang). |
 
 Compiler memakai **compiler resmi MindAR yang terpasang** (`mind-ar/src/image-target/offline-compiler.js`, versi
 yang sama dengan runtime aplikasi, saat ini 1.2.5) dan berjalan lokal dengan `canvas`, tanpa layanan eksternal.
-Kompilasi 3 gambar butuh ±40 detik. Kompilasi **tidak** dijalankan otomatis oleh `npm run dev`/`build`; jalankan
+Kompilasi 6 gambar butuh ±1 menit. Kompilasi **tidak** dijalankan otomatis oleh `npm run dev`/`build`; jalankan
 hanya ketika gambar target berubah, lalu commit `.mind` dan `.mind.json` yang baru.
 
 `verify:targets` memeriksa:
@@ -169,7 +172,26 @@ yang tidak ada akan terdeteksi sebagai "Belum tersedia", bukan dianggap file val
 Mode Demo (tanpa kamera) selalu tersedia, termasuk saat file `.mind`, kamera, atau model belum siap. Keenam materi bisa
 dipilih dan soalnya dikerjakan. Mode Demo tidak menampilkan objek 3D maupun tracking.
 
-## 9. Penyesuaian model dan tracking
+## 9. Interaksi model 3D (putar 360° dan zoom)
+
+Setelah kartu terdeteksi dan model tampil, model bisa dilihat dari segala sisi tanpa memindahkan kartu atau HP:
+
+| Aksi | HP / layar sentuh | Laptop / desktop |
+|---|---|---|
+| Putar bebas 360° | geser satu jari di area kamera | tahan klik kiri lalu geser |
+| Zoom in / out | cubit dua jari | scroll mouse / touchpad |
+| Zoom lewat tombol | tombol **+** dan **−** di sisi kanan area kamera | sama |
+| Kembali ke posisi awal | tombol putar-balik di sisi kanan | tombol yang sama atau klik dua kali |
+
+- Arah putar mengikuti gesekan di layar walau kartu sedang miring. Model berputar di pusatnya sehingga tidak menembus kartu.
+- Zoom dibatasi 0,5× sampai 3× (`MIN_ZOOM`/`MAX_ZOOM` di `src/ar/modelGestures.ts`, kecepatan putar `ROTATE_SPEED`).
+- Sudut dan zoom disimpan **per kartu** selama sesi scan berjalan. Saat kartu hilang sesaat lalu terlihat lagi, sudut
+  terakhir tetap dipakai. Berpindah ke kartu lain tidak membawa sudut kartu sebelumnya. Tidak ada yang disimpan permanen.
+- Area kamera memakai `touch-action: none` agar gesekan tidak ikut menggulir halaman. Di HP, geser halaman lewat panel soal.
+- Kontrol hanya muncul bila modelnya sudah termuat. Untuk target tanpa model (kotak kuning penanda) tidak ada interaksi.
+- Model tetap harus berada di kartu yang terlihat kamera. Bila kartu keluar dari kamera, model ikut hilang.
+
+## 10. Penyesuaian model dan tracking
 
 - Model otomatis dipusatkan di kartu, dasarnya ditempelkan ke permukaan, dan diskalakan ±80% lebar kartu.
   Penyesuaian per materi ada di `src/data/arCards.ts`: `modelScale`, `modelOffset` (`[x, y, z]` dalam satuan lebar
@@ -178,7 +200,7 @@ dipilih dan soalnya dikerjakan. Mode Demo tidak menampilkan objek 3D maupun trac
   ada di `src/data/arConfig.ts`.
 - Jangan menanamkan soal, tombol, `cardId`, `targetIndex`, atau gambar target ke dalam GLB.
 
-## 10. Checklist verifikasi dengan kartu fisik (wajib sebelum rilis)
+## 11. Checklist verifikasi dengan kartu fisik (wajib sebelum rilis)
 
 - [ ] Setiap kartu cetak memunculkan model dan soal yang benar.
 - [ ] Posisi, skala, dan arah model di atas kartu sudah pas.
@@ -186,17 +208,25 @@ dipilih dan soalnya dikerjakan. Mode Demo tidak menampilkan objek 3D maupun trac
 - [ ] Uji kehilangan target singkat (progres kuis tetap) dan berpindah antar kartu (soal/skor tidak tercampur).
 - [ ] Uji di HP nyata (kamera belakang) dan laptop (webcam) lewat HTTPS.
 - [ ] Setelah Berhenti atau pindah halaman, indikator kamera di perangkat padam.
+- [ ] Geser memutar model ke arah yang sesuai jari, cubit/scroll zoom, tombol reset berfungsi, dan halaman tidak ikut
+      tergulir saat menggeser di area kamera (uji di HP nyata).
+- [ ] Model paling berat (`pizza-urut-campuran`, ±80 rb segitiga) tetap lancar saat diputar di HP menengah.
 
-## 11. Mengganti soal
+## 12. Mengganti soal
 
-Soal saat ini adalah **konten awal**. Ganti di `src/data/arCards.ts` (tepat 3 soal per materi) dan
-`src/data/practiceQuestions.ts` (tepat 5 soal), lalu jalankan `npm test`.
+Soal kartu AR ada di `src/data/arCards.ts` (tepat 3 soal per materi; sumber `docs/quiz di AR card.docx`; gambar soal di
+`public/assets/quiz/`). Soal latihan ada di
+`src/data/practiceQuestions.ts` (29 soal: Level 1 isian, Level 2–3 pilihan ganda; sumber `docs/Latihan soal di WEB.docx`),
+lalu jalankan `npm test`. Soal isian dinilai otomatis lewat aturan `accept` (bilangan/kata kunci) pada tiap soal.
 
-## 12. Batasan saat ini
+**Materi bacaan** (`/materi`): PDF per materi ada di `public/assets/materi/` dan didaftarkan di `src/data/materi.ts`
+(judul, ringkasan, kartu terkait, jumlah halaman). Untuk mengganti materi, timpa file PDF-nya, perbarui `pages` bila
+jumlah halaman berubah, lalu jalankan `npm test` (tes memeriksa file ada dan jumlah halamannya cocok). PDF ditampilkan
+dengan PDF.js (bukan `<iframe>`), karena PDF tertanam tidak tampil di Chrome Android.
+
+## 13. Batasan saat ini
 
 - Kartu target sementara hanya untuk pengembangan dan bukan desain final.
-- Model untuk Pecahan Menjadi Persen, Mengurutkan Pecahan, dan Operasi Hitung Pecahan belum ada. Materi ini hanya bisa
-  dicoba di Mode Demo.
 - Tracking sudah diuji otomatis di Chromium headless dengan kamera palsu (video sintetis berisi gambar kartu), tetapi
   **belum diuji dengan kartu cetak dan kamera fisik**. Penyesuaian skala/posisi model juga belum dicek di perangkat nyata.
 - Gambar dibuat ulang dengan font sistem. Di OS lain, pikselnya bisa sedikit berbeda, jadi jalankan `compile:targets`

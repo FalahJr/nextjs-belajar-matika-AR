@@ -1,13 +1,8 @@
+import { Link } from "react-router-dom";
+import { BookOpen } from "lucide-react";
 import { AR_CARDS } from "../../config/arTargets";
-
-const LOOK: Record<string, { emoji: string; bg: string }> = {
-  "pizza-pecahan-biasa": { emoji: "🍕", bg: "bg-rose-100" },
-  "susu-pecahan-campuran": { emoji: "🥛", bg: "bg-sky-100" },
-  "piring-buah-desimal": { emoji: "🍓", bg: "bg-emerald-100" },
-  "jajanan-ubah-persen": { emoji: "🍬", bg: "bg-violet-100" },
-  "pizza-urut-campuran": { emoji: "🍕", bg: "bg-amber-100" },
-  "kue-operasi-hitung": { emoji: "🧁", bg: "bg-pink-100" },
-};
+import { CARD_LOOK } from "../../data/cardLook";
+import { MATERI } from "../../data/materi";
 
 export function CardsGrid() {
   return (
@@ -28,7 +23,8 @@ export function CardsGrid() {
         </p>
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {AR_CARDS.map((c, i) => {
-            const look = LOOK[c.cardId];
+            const look = CARD_LOOK[c.cardId];
+            const materi = MATERI.find((m) => m.cardId === c.cardId);
             return (
               <li
                 key={c.cardId}
@@ -50,6 +46,14 @@ export function CardsGrid() {
                   <p className="mt-1 text-sm font-medium text-slate-700">
                     {c.topic}
                   </p>
+                  {materi && (
+                    <Link
+                      to={`/materi/${materi.slug}`}
+                      className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-xl text-sm font-extrabold text-indigo-700 hover:text-indigo-900"
+                    >
+                      <BookOpen className="size-4" aria-hidden="true" /> Baca materi
+                    </Link>
+                  )}
                 </div>
               </li>
             );

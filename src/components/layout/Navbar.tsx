@@ -6,8 +6,13 @@ import { Logo } from './Logo'
 
 const LINKS = [
   { to: '/#cara-belajar', label: 'Cara Belajar' },
-  { to: '/#materi', label: 'Materi' },
   { to: '/#tentang', label: 'Tentang' },
+]
+
+/** Halaman tersendiri (bukan anchor di beranda); ditandai aktif saat dibuka. */
+const PAGE_LINKS = [
+  { to: '/materi', label: 'Materi' },
+  { to: '/latihan', label: 'Latihan Soal' },
 ]
 
 export function Navbar() {
@@ -25,14 +30,17 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
-          <NavLink
-            to="/latihan"
-            className={({ isActive }) =>
-              `rounded-xl px-3 py-2 font-bold hover:bg-indigo-50 ${isActive ? 'bg-indigo-100 text-indigo-700' : 'text-indigo-900'}`
-            }
-          >
-            Latihan Soal
-          </NavLink>
+          {PAGE_LINKS.map((l) => (
+            <NavLink
+              key={l.to}
+              to={l.to}
+              className={({ isActive }) =>
+                `rounded-xl px-3 py-2 font-bold hover:bg-indigo-50 ${isActive ? 'bg-indigo-100 text-indigo-700' : 'text-indigo-900'}`
+              }
+            >
+              {l.label}
+            </NavLink>
+          ))}
           <Link to="/scan" className={buttonClass('accent', 'ml-2 min-h-11 py-2')}>
             <ScanLine className="size-5" aria-hidden="true" /> Scan AR
           </Link>
@@ -60,11 +68,13 @@ export function Navbar() {
                 </Link>
               </li>
             ))}
-            <li>
-              <Link to="/latihan" onClick={close} className="block rounded-xl px-3 py-3 font-bold text-indigo-900 hover:bg-indigo-50">
-                Latihan Soal
-              </Link>
-            </li>
+            {PAGE_LINKS.map((l) => (
+              <li key={l.to}>
+                <Link to={l.to} onClick={close} className="block rounded-xl px-3 py-3 font-bold text-indigo-900 hover:bg-indigo-50">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
           </ul>
           <Link to="/scan" onClick={close} className={buttonClass('accent', 'w-full')}>
             <ScanLine className="size-5" aria-hidden="true" /> Mulai Scan AR

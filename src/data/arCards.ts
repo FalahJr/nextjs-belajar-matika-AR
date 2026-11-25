@@ -6,9 +6,8 @@ import type { ARCardContent } from "../types/ar";
  * File ini sengaja TIDAK berisi `targetIndex` atau path model. Pemetaan target (.mind) dan
  * ketersediaan model GLB dikelola di `src/config/arTargets.ts` + `src/config/targets/*.json`.
  *
- * PENTING — soal:
- * Seluruh soal di bawah adalah KONTEN AWAL (placeholder untuk pengembangan), bukan soal final.
- * Ganti sesuai materi final; struktur (3 soal, opsi A–D, kunci) divalidasi oleh unit test.
+ * Soal: sumber docs/quiz di AR card.docx (6 kartu x 3 soal). Struktur (3 soal per kartu, opsi A–C atau A–D, kunci)
+ * divalidasi oleh unit test. Card 1 bergambar dan hanya punya 3 opsi; gambar ada di public/assets/quiz/.
  */
 export const AR_CARD_CONTENT: ARCardContent[] = [
   {
@@ -19,34 +18,48 @@ export const AR_CARD_CONTENT: ARCardContent[] = [
     questions: [
       {
         id: "pizza-pecahan-biasa-1",
-        question:
-          "Sebuah pizza dibagi menjadi 8 potong sama besar. Rina memakan 3 potong. Pecahan yang menunjukkan bagian yang dimakan Rina adalah …",
-        options: { A: "3/8", B: "8/3", C: "5/8", D: "3/5" },
-        correctAnswer: "A",
-        explanation:
-          "Rina makan 3 dari 8 potong, jadi bagiannya 3/8 (pembilang 3, penyebut 8).",
+        question: "Gambar di bawah bernilai berapa?",
+        image: {
+          src: "/assets/quiz/card-1-soal-1.png",
+          alt: "Segitiga dibagi dua sama besar, satu bagian berwarna kuning.",
+        },
+        options: {
+          A: "2/1",
+          B: "1/2",
+          C: "1/3",
+        },
+        correctAnswer: "B",
+        explanation: "Segitiga dibagi menjadi 2 bagian sama besar dan 1 bagian berwarna, jadi nilainya 1/2.",
       },
       {
         id: "pizza-pecahan-biasa-2",
-        question: "Pada pecahan 5/6, angka 6 disebut …",
+        question: "Gambar di bawah bernilai berapa?",
+        image: {
+          src: "/assets/quiz/card-1-soal-2.png",
+          alt: "Segitiga dibagi tiga sama besar, satu bagian berwarna kuning.",
+        },
         options: {
-          A: "pembilang",
-          B: "bilangan bulat",
-          C: "penyebut",
-          D: "hasil bagi",
+          A: "2/3",
+          B: "1/2",
+          C: "1/3",
         },
         correctAnswer: "C",
-        explanation:
-          "Angka di bawah garis pecahan adalah penyebut. Ia menunjukkan pizza dibagi menjadi berapa bagian sama besar.",
+        explanation: "Segitiga dibagi menjadi 3 bagian sama besar dan 1 bagian berwarna, jadi nilainya 1/3.",
       },
       {
         id: "pizza-pecahan-biasa-3",
-        question:
-          "Sebuah pizza dibagi menjadi 4 potong sama besar. Jika 2 potong dimakan, bagian itu dapat ditulis dengan pecahan paling sederhana …",
-        options: { A: "1/4", B: "1/2", C: "3/4", D: "2/3" },
-        correctAnswer: "B",
-        explanation:
-          "2/4 sama dengan 1/2, karena pembilang dan penyebut sama-sama dibagi 2.",
+        question: "Gambar di bawah bernilai berapa?",
+        image: {
+          src: "/assets/quiz/card-1-soal-3.png",
+          alt: "Segilima dibagi lima sama besar, dua bagian berwarna kuning.",
+        },
+        options: {
+          A: "2/5",
+          B: "3/5",
+          C: "4/5",
+        },
+        correctAnswer: "A",
+        explanation: "Segilima dibagi menjadi 5 bagian sama besar dan 2 bagian berwarna, jadi nilainya 2/5.",
       },
     ],
   },
@@ -54,30 +67,43 @@ export const AR_CARD_CONTENT: ARCardContent[] = [
     cardId: "susu-pecahan-campuran",
     title: "Pecahan Campuran",
     type: "SUSU",
-    topic: "Mengubah pecahan biasa menjadi pecahan campuran dan sebaliknya.",
+    topic: "Menjumlahkan, mengurangkan, dan mengubah pecahan campuran menjadi pecahan biasa.",
     questions: [
       {
         id: "susu-pecahan-campuran-1",
-        question: "Pecahan 7/3 jika diubah menjadi pecahan campuran adalah …",
-        options: { A: "1 1/3", B: "2 1/3", C: "3 1/3", D: "2 2/3" },
-        correctAnswer: "B",
-        explanation: "7 dibagi 3 = 2 sisa 1. Jadi 7/3 = 2 1/3.",
+        question: "Hitunglah 1 1/2 + 2 1/2!",
+        options: {
+          A: "1",
+          B: "1/2",
+          C: "4",
+          D: "2/4",
+        },
+        correctAnswer: "C",
+        explanation: "Jumlahkan bilangan bulatnya: 1 + 2 = 3. Jumlahkan pecahannya: 1/2 + 1/2 = 1. Jadi 3 + 1 = 4.",
       },
       {
         id: "susu-pecahan-campuran-2",
-        question:
-          "Ibu membeli 3 1/2 liter susu. Jika ditulis sebagai pecahan biasa, hasilnya adalah …",
-        options: { A: "4/2", B: "5/2", C: "6/2", D: "7/2" },
-        correctAnswer: "D",
-        explanation: "3 1/2 = (3 × 2 + 1)/2 = 7/2.",
+        question: "Hitunglah 3 3/4 − 1 1/4!",
+        options: {
+          A: "2 1/2",
+          B: "4 1/2",
+          C: "3",
+          D: "4",
+        },
+        correctAnswer: "A",
+        explanation: "Kurangkan bilangan bulatnya: 3 − 1 = 2. Kurangkan pecahannya: 3/4 − 1/4 = 2/4 = 1/2. Jadi hasilnya 2 1/2.",
       },
       {
         id: "susu-pecahan-campuran-3",
-        question: "Manakah yang merupakan pecahan campuran?",
-        options: { A: "1 3/4", B: "3/4", C: "5/4", D: "4/4" },
-        correctAnswer: "A",
-        explanation:
-          "Pecahan campuran terdiri dari bilangan bulat dan pecahan, yaitu 1 3/4.",
+        question: "Ubahlah pecahan campuran 2 1/3 menjadi pecahan biasa!",
+        options: {
+          A: "6",
+          B: "4",
+          C: "3/2",
+          D: "7/3",
+        },
+        correctAnswer: "D",
+        explanation: "2 1/3 = (2 × 3 + 1)/3 = 7/3.",
       },
     ],
   },
@@ -89,27 +115,39 @@ export const AR_CARD_CONTENT: ARCardContent[] = [
     questions: [
       {
         id: "piring-buah-desimal-1",
-        question:
-          "Setengah piring buah ditulis 1/2. Dalam bentuk desimal, 1/2 sama dengan …",
-        options: { A: "0,2", B: "0,5", C: "1,2", D: "0,12" },
+        question: "Pecahan 3/10 jika ditulis dalam bentuk desimal menjadi …",
+        options: {
+          A: "0,03",
+          B: "0,3",
+          C: "3,10",
+          D: "30",
+        },
         correctAnswer: "B",
-        explanation: "1/2 = 5/10 = 0,5.",
+        explanation: "Penyebutnya 10, jadi ada 1 angka di belakang koma. 3/10 = 0,3.",
       },
       {
         id: "piring-buah-desimal-2",
-        question: "Pecahan 3/4 jika diubah menjadi desimal adalah …",
-        options: { A: "0,34", B: "3,4", C: "0,43", D: "0,75" },
-        correctAnswer: "D",
-        explanation: "3/4 = 75/100 = 0,75.",
+        question: "Pada bilangan 4,275, angka 7 menempati nilai tempat …",
+        options: {
+          A: "satuan",
+          B: "persepuluhan",
+          C: "perseratusan",
+          D: "perseribuan",
+        },
+        correctAnswer: "C",
+        explanation: "Setelah koma: 2 persepuluhan, 7 perseratusan, 5 perseribuan. Jadi angka 7 menempati nilai tempat perseratusan.",
       },
       {
         id: "piring-buah-desimal-3",
-        question:
-          "Bilangan desimal 0,6 jika diubah menjadi pecahan biasa paling sederhana adalah …",
-        options: { A: "3/5", B: "6/100", C: "1/6", D: "6/5" },
+        question: "Bilangan 0,25 dibaca …",
+        options: {
+          A: "nol koma dua lima",
+          B: "nol koma satu",
+          C: "dua koma lima",
+          D: "nol koma dua puluh lima ratus",
+        },
         correctAnswer: "A",
-        explanation:
-          "0,6 = 6/10. Pembilang dan penyebut dibagi 2, hasilnya 3/5.",
+        explanation: "Angka di belakang koma dibaca satu per satu, jadi 0,25 dibaca nol koma dua lima.",
       },
     ],
   },
@@ -121,26 +159,39 @@ export const AR_CARD_CONTENT: ARCardContent[] = [
     questions: [
       {
         id: "jajanan-ubah-persen-1",
-        question:
-          "Separuh jajanan di piring sudah habis, yaitu 50%. Pecahan yang sama nilainya dengan 50% adalah …",
-        options: { A: "1/5", B: "1/4", C: "1/2", D: "1/10" },
-        correctAnswer: "C",
-        explanation: "50% = 50/100 = 1/2.",
+        question: "Tanda % dibaca persen. Persen artinya …",
+        options: {
+          A: "per sepuluh",
+          B: "per seratus",
+          C: "per seribu",
+          D: "per satu",
+        },
+        correctAnswer: "B",
+        explanation: "Persen berarti per seratus. Jadi 40% sama dengan 40/100.",
       },
       {
         id: "jajanan-ubah-persen-2",
-        question: "Pecahan 1/4 jika diubah menjadi persen adalah …",
-        options: { A: "14%", B: "25%", C: "40%", D: "4%" },
-        correctAnswer: "B",
-        explanation: "1/4 = 25/100 = 25%.",
+        question: "Pecahan 3/5 jika diubah menjadi persen adalah …",
+        options: {
+          A: "35%",
+          B: "53%",
+          C: "60%",
+          D: "80%",
+        },
+        correctAnswer: "C",
+        explanation: "3/5 = 60/100 = 60%.",
       },
       {
         id: "jajanan-ubah-persen-3",
-        question:
-          "Dari 10 permen, 3 permen berwarna merah. Persentase permen merah adalah …",
-        options: { A: "3%", B: "13%", C: "7%", D: "30%" },
+        question: "Berapa 20% dari 150?",
+        options: {
+          A: "3",
+          B: "20",
+          C: "130",
+          D: "30",
+        },
         correctAnswer: "D",
-        explanation: "3/10 = 30/100 = 30%.",
+        explanation: "20% = 20/100. Jadi 20/100 × 150 = 30.",
       },
     ],
   },
@@ -148,41 +199,43 @@ export const AR_CARD_CONTENT: ARCardContent[] = [
     cardId: "pizza-urut-campuran",
     title: "Mengurutkan Pecahan",
     type: "KUE",
-    topic: "Memahami dan mengurutkan nilai pecahan.",
+    topic: "Mengurutkan, membandingkan, dan mengubah pecahan menjadi persen.",
     questions: [
       {
         id: "pizza-urut-campuran-1",
-        question: "Urutkan dari yang terkecil ke terbesar: 1 1/2, 1 3/4, 1 1/4",
+        question: "Urutan pecahan 1/2, 1/4, dan 3/4 dari yang terkecil adalah …",
         options: {
-          A: "1 3/4, 1 1/2, 1 1/4",
-          B: "1 1/2, 1 1/4, 1 3/4",
-          C: "1 1/4, 1 1/2, 1 3/4",
-          D: "1 1/4, 1 3/4, 1 1/2",
+          A: "1/2, 1/4, 3/4",
+          B: "1/4, 1/2, 3/4",
+          C: "3/4, 1/2, 1/4",
+          D: "1/4, 3/4, 1/2",
         },
-        correctAnswer: "C",
-        explanation:
-          "Bilangan bulatnya sama (1), jadi bandingkan pecahannya: 1/4 < 2/4 (=1/2) < 3/4.",
+        correctAnswer: "B",
+        explanation: "Samakan penyebut menjadi 4: 1/2 = 2/4. Urutannya 1/4 < 2/4 < 3/4, yaitu 1/4, 1/2, 3/4.",
       },
       {
         id: "pizza-urut-campuran-2",
-        question: "Bilangan campuran yang paling besar adalah …",
-        options: { A: "2 1/2", B: "2 1/4", C: "1 3/4", D: "1 1/2" },
-        correctAnswer: "A",
-        explanation:
-          "Bilangan bulat terbesar adalah 2. Di antara 2 1/2 dan 2 1/4, pecahan 1/2 lebih besar dari 1/4.",
+        question: "Perbandingan yang benar antara 2/3 dan 1/2 adalah …",
+        options: {
+          A: "2/3 < 1/2",
+          B: "2/3 = 1/2",
+          C: "2/3 > 1/2",
+          D: "tidak bisa dibandingkan",
+        },
+        correctAnswer: "C",
+        explanation: "Samakan penyebut menjadi 6: 2/3 = 4/6 dan 1/2 = 3/6. Karena 4/6 lebih besar dari 3/6, maka 2/3 > 1/2.",
       },
       {
         id: "pizza-urut-campuran-3",
-        question: "Urutkan dari yang terbesar ke terkecil: 3 1/2, 2 3/4, 3 1/4",
+        question: "Pecahan 3/4 jika diubah ke bentuk persen menjadi …",
         options: {
-          A: "3 1/4, 3 1/2, 2 3/4",
-          B: "3 1/2, 3 1/4, 2 3/4",
-          C: "2 3/4, 3 1/4, 3 1/2",
-          D: "3 1/2, 2 3/4, 3 1/4",
+          A: "34%",
+          B: "0,75%",
+          C: "25%",
+          D: "75%",
         },
-        correctAnswer: "B",
-        explanation:
-          "Bilangan bulat 3 lebih besar dari 2. Untuk yang sama-sama 3: 1/2 lebih besar dari 1/4.",
+        correctAnswer: "D",
+        explanation: "3/4 = 75/100 = 75%.",
       },
     ],
   },
@@ -190,32 +243,43 @@ export const AR_CARD_CONTENT: ARCardContent[] = [
     cardId: "kue-operasi-hitung",
     title: "Operasi Hitung Pecahan",
     type: "MOCHI",
-    topic:
-      "Melakukan operasi hitung pecahan penjumlahan, pengurangan, perkalian, dan pembagian.",
+    topic: "Membandingkan, mengalikan, dan membagi pecahan.",
     questions: [
       {
         id: "kue-operasi-hitung-1",
-        question:
-          "Ada 24 kue yang dibagi rata ke dalam 6 kotak. Setiap kotak berisi … kue.",
-        options: { A: "3", B: "6", C: "18", D: "4" },
-        correctAnswer: "D",
-        explanation: "24 ÷ 6 = 4.",
+        question: "Bandingkan 2/3 dan 3/4. Pernyataan yang benar adalah …",
+        options: {
+          A: "2/3 > 3/4",
+          B: "2/3 = 3/4",
+          C: "2/3 < 3/4",
+          D: "8/12 > 9/12",
+        },
+        correctAnswer: "C",
+        explanation: "Samakan penyebut menjadi 12: 2/3 = 8/12 dan 3/4 = 9/12. Karena 8/12 lebih kecil dari 9/12, maka 2/3 < 3/4.",
       },
       {
         id: "kue-operasi-hitung-2",
-        question:
-          "Satu kotak berisi 8 kue. Ayah membeli 5 kotak. Jumlah kue seluruhnya adalah …",
-        options: { A: "13", B: "40", C: "45", D: "35" },
-        correctAnswer: "B",
-        explanation: "5 × 8 = 40.",
+        question: "Hasil dari 2/3 × 1/4 dalam bentuk paling sederhana adalah …",
+        options: {
+          A: "3/7",
+          B: "2/7",
+          C: "1/6",
+          D: "8/3",
+        },
+        correctAnswer: "C",
+        explanation: "Kalikan pembilang dengan pembilang dan penyebut dengan penyebut: 2/12. Sederhanakan dengan membagi 2: 1/6.",
       },
       {
         id: "kue-operasi-hitung-3",
-        question: "Hasil dari 6 + 4 × 2 adalah …",
-        options: { A: "20", B: "12", C: "14", D: "16" },
-        correctAnswer: "C",
-        explanation:
-          "Perkalian dikerjakan lebih dulu: 4 × 2 = 8, lalu 6 + 8 = 14.",
+        question: "Cara menghitung a/b ÷ c/d adalah …",
+        options: {
+          A: "a/b × c/d",
+          B: "b/a × d/c",
+          C: "a/b + d/c",
+          D: "a/b × d/c",
+        },
+        correctAnswer: "D",
+        explanation: "Membagi dengan pecahan sama dengan mengalikan dengan kebalikannya: a/b ÷ c/d = a/b × d/c.",
       },
     ],
   },

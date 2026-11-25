@@ -1,11 +1,38 @@
 {
   "id": "temporary",
   "label": "Target sementara (buatan project)",
-  "description": "Tiga kartu target sementara untuk pengembangan & uji awal. Bukan desain kartu final. Dibuat dengan `npm run targets:generate`, dikompilasi dengan `npm run compile:targets`.",
+  "description": "Kartu target sementara (6 kartu) untuk pengembangan & uji awal. Bukan desain kartu final. Dibuat dengan `npm run targets:generate`, dikompilasi dengan `npm run compile:targets`.",
   "mindUrl": "/assets/targets/temporary-targets.mind",
   "targets": [
-    { "targetIndex": 0, "cardId": "pizza-pecahan-biasa", "image": "/assets/targets/temporary/01-pizza-pecahan-biasa.png" },
-    { "targetIndex": 1, "cardId": "susu-pecahan-campuran", "image": "/assets/targets/temporary/02-susu-pecahan-campuran.png" },
-    { "targetIndex": 2, "cardId": "piring-buah-desimal", "image": "/assets/targets/temporary/03-piring-buah-desimal.png" }
+    {
+      "targetIndex": 0,
+      "cardId": "pizza-pecahan-biasa",
+      "image": "/assets/targets/temporary/01-pizza-pecahan-biasa.png"
+    },
+    {
+      "targetIndex": 1,
+      "cardId": "susu-pecahan-campuran",
+      "image": "/assets/targets/temporary/02-susu-pecahan-campuran.png"
+    },
+    {
+      "targetIndex": 2,
+      "cardId": "piring-buah-desimal",
+      "image": "/assets/targets/temporary/03-piring-buah-desimal.png"
+    },
+    {
+      "targetIndex": 3,
+      "cardId": "jajanan-ubah-persen",
+      "image": "/assets/targets/temporary/04-jajanan-ubah-persen.png"
+    },
+    {
+      "targetIndex": 4,
+      "cardId": "pizza-urut-campuran",
+      "image": "/assets/targets/temporary/05-pizza-urut-campuran.png"
+    },
+    {
+      "targetIndex": 5,
+      "cardId": "kue-operasi-hitung",
+      "image": "/assets/targets/temporary/06-kue-operasi-hitung.png"
+    }
   ]
 }
